@@ -16,9 +16,11 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedDepositRouteImport } from './routes/_authenticated/deposit'
 import { Route as AuthenticatedEarnCoinsRouteImport } from './routes/_authenticated/earn-coins'
 import { Route as AuthenticatedPackagesRouteImport } from './routes/_authenticated/packages'
 import { Route as AuthenticatedTasksRouteImport } from './routes/_authenticated/tasks'
+import { Route as AuthenticatedWithdrawRouteImport } from './routes/_authenticated/withdraw'
 import { Route as AuthenticatedTaskIdRouteImport } from './routes/_authenticated/task.$id'
 import { Route as ApiPublicPostbackRouteImport } from './routes/api/public/postback'
 
@@ -56,6 +58,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedDepositRoute = AuthenticatedDepositRouteImport.update({
+  id: '/deposit',
+  path: '/deposit',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedEarnCoinsRoute = AuthenticatedEarnCoinsRouteImport.update({
   id: '/earn-coins',
   path: '/earn-coins',
@@ -69,6 +76,11 @@ const AuthenticatedPackagesRoute = AuthenticatedPackagesRouteImport.update({
 const AuthenticatedTasksRoute = AuthenticatedTasksRouteImport.update({
   id: '/tasks',
   path: '/tasks',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedWithdrawRoute = AuthenticatedWithdrawRouteImport.update({
+  id: '/withdraw',
+  path: '/withdraw',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedTaskIdRoute = AuthenticatedTaskIdRouteImport.update({
@@ -89,9 +101,11 @@ export interface FileRoutesByFullPath {
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/deposit': typeof AuthenticatedDepositRoute
   '/earn-coins': typeof AuthenticatedEarnCoinsRoute
   '/packages': typeof AuthenticatedPackagesRoute
   '/tasks': typeof AuthenticatedTasksRoute
+  '/withdraw': typeof AuthenticatedWithdrawRoute
   '/task/$id': typeof AuthenticatedTaskIdRoute
   '/api/public/postback': typeof ApiPublicPostbackRoute
 }
@@ -102,9 +116,11 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/deposit': typeof AuthenticatedDepositRoute
   '/earn-coins': typeof AuthenticatedEarnCoinsRoute
   '/packages': typeof AuthenticatedPackagesRoute
   '/tasks': typeof AuthenticatedTasksRoute
+  '/withdraw': typeof AuthenticatedWithdrawRoute
   '/task/$id': typeof AuthenticatedTaskIdRoute
   '/api/public/postback': typeof ApiPublicPostbackRoute
 }
@@ -117,9 +133,11 @@ export interface FileRoutesById {
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/deposit': typeof AuthenticatedDepositRoute
   '/_authenticated/earn-coins': typeof AuthenticatedEarnCoinsRoute
   '/_authenticated/packages': typeof AuthenticatedPackagesRoute
   '/_authenticated/tasks': typeof AuthenticatedTasksRoute
+  '/_authenticated/withdraw': typeof AuthenticatedWithdrawRoute
   '/_authenticated/task/$id': typeof AuthenticatedTaskIdRoute
   '/api/public/postback': typeof ApiPublicPostbackRoute
 }
@@ -132,9 +150,11 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/dashboard'
+    | '/deposit'
     | '/earn-coins'
     | '/packages'
     | '/tasks'
+    | '/withdraw'
     | '/task/$id'
     | '/api/public/postback'
   fileRoutesByTo: FileRoutesByTo
@@ -145,9 +165,11 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/dashboard'
+    | '/deposit'
     | '/earn-coins'
     | '/packages'
     | '/tasks'
+    | '/withdraw'
     | '/task/$id'
     | '/api/public/postback'
   id:
@@ -159,9 +181,11 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/_authenticated/dashboard'
+    | '/_authenticated/deposit'
     | '/_authenticated/earn-coins'
     | '/_authenticated/packages'
     | '/_authenticated/tasks'
+    | '/_authenticated/withdraw'
     | '/_authenticated/task/$id'
     | '/api/public/postback'
   fileRoutesById: FileRoutesById
@@ -227,6 +251,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/deposit': {
+      id: '/_authenticated/deposit'
+      path: '/deposit'
+      fullPath: '/deposit'
+      preLoaderRoute: typeof AuthenticatedDepositRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/earn-coins': {
       id: '/_authenticated/earn-coins'
       path: '/earn-coins'
@@ -248,6 +279,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTasksRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/withdraw': {
+      id: '/_authenticated/withdraw'
+      path: '/withdraw'
+      fullPath: '/withdraw'
+      preLoaderRoute: typeof AuthenticatedWithdrawRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/task/$id': {
       id: '/_authenticated/task/$id'
       path: '/task/$id'
@@ -267,17 +305,21 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedDepositRoute: typeof AuthenticatedDepositRoute
   AuthenticatedEarnCoinsRoute: typeof AuthenticatedEarnCoinsRoute
   AuthenticatedPackagesRoute: typeof AuthenticatedPackagesRoute
   AuthenticatedTasksRoute: typeof AuthenticatedTasksRoute
+  AuthenticatedWithdrawRoute: typeof AuthenticatedWithdrawRoute
   AuthenticatedTaskIdRoute: typeof AuthenticatedTaskIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedDepositRoute: AuthenticatedDepositRoute,
   AuthenticatedEarnCoinsRoute: AuthenticatedEarnCoinsRoute,
   AuthenticatedPackagesRoute: AuthenticatedPackagesRoute,
   AuthenticatedTasksRoute: AuthenticatedTasksRoute,
+  AuthenticatedWithdrawRoute: AuthenticatedWithdrawRoute,
   AuthenticatedTaskIdRoute: AuthenticatedTaskIdRoute,
 }
 
