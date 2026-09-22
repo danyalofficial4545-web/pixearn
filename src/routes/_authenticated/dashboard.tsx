@@ -102,7 +102,7 @@ function DashboardPage() {
           </div>
         </div>
 
-        <ReferralBanner code={profile?.referral_code} />
+        <ReferralBanner code={profile?.referral_code ?? null} />
 
         <section>
           <div className="mb-2 flex items-center justify-between">

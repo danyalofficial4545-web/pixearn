@@ -111,7 +111,7 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
   );
 }
 
-export function ReferralBanner({ code }: { code?: string | null }) {
+export function ReferralBanner({ code }: { code?: string | null | undefined }) {
   return (
     <Link
       to="/referral"

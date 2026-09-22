@@ -16,7 +16,10 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedEarnCoinsRouteImport } from './routes/_authenticated/earn-coins'
+import { Route as AuthenticatedPackagesRouteImport } from './routes/_authenticated/packages'
 import { Route as AuthenticatedTasksRouteImport } from './routes/_authenticated/tasks'
+import { Route as AuthenticatedTaskIdRouteImport } from './routes/_authenticated/task.$id'
 import { Route as ApiPublicPostbackRouteImport } from './routes/api/public/postback'
 
 const IndexRoute = IndexRouteImport.update({
@@ -53,9 +56,24 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedEarnCoinsRoute = AuthenticatedEarnCoinsRouteImport.update({
+  id: '/earn-coins',
+  path: '/earn-coins',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPackagesRoute = AuthenticatedPackagesRouteImport.update({
+  id: '/packages',
+  path: '/packages',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedTasksRoute = AuthenticatedTasksRouteImport.update({
   id: '/tasks',
   path: '/tasks',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedTaskIdRoute = AuthenticatedTaskIdRouteImport.update({
+  id: '/task/$id',
+  path: '/task/$id',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const ApiPublicPostbackRoute = ApiPublicPostbackRouteImport.update({
@@ -71,7 +89,10 @@ export interface FileRoutesByFullPath {
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/earn-coins': typeof AuthenticatedEarnCoinsRoute
+  '/packages': typeof AuthenticatedPackagesRoute
   '/tasks': typeof AuthenticatedTasksRoute
+  '/task/$id': typeof AuthenticatedTaskIdRoute
   '/api/public/postback': typeof ApiPublicPostbackRoute
 }
 export interface FileRoutesByTo {
@@ -81,7 +102,10 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/earn-coins': typeof AuthenticatedEarnCoinsRoute
+  '/packages': typeof AuthenticatedPackagesRoute
   '/tasks': typeof AuthenticatedTasksRoute
+  '/task/$id': typeof AuthenticatedTaskIdRoute
   '/api/public/postback': typeof ApiPublicPostbackRoute
 }
 export interface FileRoutesById {
@@ -93,7 +117,10 @@ export interface FileRoutesById {
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/earn-coins': typeof AuthenticatedEarnCoinsRoute
+  '/_authenticated/packages': typeof AuthenticatedPackagesRoute
   '/_authenticated/tasks': typeof AuthenticatedTasksRoute
+  '/_authenticated/task/$id': typeof AuthenticatedTaskIdRoute
   '/api/public/postback': typeof ApiPublicPostbackRoute
 }
 export interface FileRouteTypes {
@@ -105,7 +132,10 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/dashboard'
+    | '/earn-coins'
+    | '/packages'
     | '/tasks'
+    | '/task/$id'
     | '/api/public/postback'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -115,7 +145,10 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/dashboard'
+    | '/earn-coins'
+    | '/packages'
     | '/tasks'
+    | '/task/$id'
     | '/api/public/postback'
   id:
     | '__root__'
@@ -126,7 +159,10 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/_authenticated/dashboard'
+    | '/_authenticated/earn-coins'
+    | '/_authenticated/packages'
     | '/_authenticated/tasks'
+    | '/_authenticated/task/$id'
     | '/api/public/postback'
   fileRoutesById: FileRoutesById
 }
@@ -191,11 +227,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/earn-coins': {
+      id: '/_authenticated/earn-coins'
+      path: '/earn-coins'
+      fullPath: '/earn-coins'
+      preLoaderRoute: typeof AuthenticatedEarnCoinsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/packages': {
+      id: '/_authenticated/packages'
+      path: '/packages'
+      fullPath: '/packages'
+      preLoaderRoute: typeof AuthenticatedPackagesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/tasks': {
       id: '/_authenticated/tasks'
       path: '/tasks'
       fullPath: '/tasks'
       preLoaderRoute: typeof AuthenticatedTasksRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/task/$id': {
+      id: '/_authenticated/task/$id'
+      path: '/task/$id'
+      fullPath: '/task/$id'
+      preLoaderRoute: typeof AuthenticatedTaskIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/api/public/postback': {
@@ -210,12 +267,18 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedEarnCoinsRoute: typeof AuthenticatedEarnCoinsRoute
+  AuthenticatedPackagesRoute: typeof AuthenticatedPackagesRoute
   AuthenticatedTasksRoute: typeof AuthenticatedTasksRoute
+  AuthenticatedTaskIdRoute: typeof AuthenticatedTaskIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedEarnCoinsRoute: AuthenticatedEarnCoinsRoute,
+  AuthenticatedPackagesRoute: AuthenticatedPackagesRoute,
   AuthenticatedTasksRoute: AuthenticatedTasksRoute,
+  AuthenticatedTaskIdRoute: AuthenticatedTaskIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
