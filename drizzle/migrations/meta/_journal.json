@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1790081345975,
+      "tag": "0000_pixearn_core_schema",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1790081375857,
+      "tag": "0001_proofs_storage_policies",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790081405153,
+      "tag": "0002_admin_settings",
+      "breakpoints": true
+    }
+  ]
+}
