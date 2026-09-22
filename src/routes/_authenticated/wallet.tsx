@@ -75,7 +75,7 @@ function WalletPage() {
           {rows.map((t) => (
             <div key={t.id} className="flex items-center justify-between gap-3 px-4 py-3">
               <div className="min-w-0">
-                <p className="truncate text-sm font-medium">{t.note ?? t.kind}</p>
+                <p className="truncate text-sm font-medium">{t.note ?? t.type}</p>
                 <p className="text-xs text-muted-foreground">{fmtDate(t.created_at)}</p>
               </div>
               <p
