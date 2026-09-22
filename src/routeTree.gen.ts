@@ -10,33 +10,254 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as RegisterRouteImport } from './routes/register'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedDepositRouteImport } from './routes/_authenticated/deposit'
+import { Route as AuthenticatedEarnCoinsRouteImport } from './routes/_authenticated/earn-coins'
+import { Route as AuthenticatedHistoryRouteImport } from './routes/_authenticated/history'
+import { Route as AuthenticatedPackagesRouteImport } from './routes/_authenticated/packages'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as AuthenticatedReferralRouteImport } from './routes/_authenticated/referral'
+import { Route as AuthenticatedTasksRouteImport } from './routes/_authenticated/tasks'
+import { Route as AuthenticatedWalletRouteImport } from './routes/_authenticated/wallet'
+import { Route as AuthenticatedWithdrawRouteImport } from './routes/_authenticated/withdraw'
+import { Route as AuthenticatedTaskIdRouteImport } from './routes/_authenticated/task.$id'
+import { Route as ApiPublicPostbackRouteImport } from './routes/api/public/postback'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDepositRoute = AuthenticatedDepositRouteImport.update({
+  id: '/deposit',
+  path: '/deposit',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedEarnCoinsRoute = AuthenticatedEarnCoinsRouteImport.update({
+  id: '/earn-coins',
+  path: '/earn-coins',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedHistoryRoute = AuthenticatedHistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPackagesRoute = AuthenticatedPackagesRouteImport.update({
+  id: '/packages',
+  path: '/packages',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedReferralRoute = AuthenticatedReferralRouteImport.update({
+  id: '/referral',
+  path: '/referral',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedTasksRoute = AuthenticatedTasksRouteImport.update({
+  id: '/tasks',
+  path: '/tasks',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedWalletRoute = AuthenticatedWalletRouteImport.update({
+  id: '/wallet',
+  path: '/wallet',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedWithdrawRoute = AuthenticatedWithdrawRouteImport.update({
+  id: '/withdraw',
+  path: '/withdraw',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedTaskIdRoute = AuthenticatedTaskIdRouteImport.update({
+  id: '/task/$id',
+  path: '/task/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const ApiPublicPostbackRoute = ApiPublicPostbackRouteImport.update({
+  id: '/api/public/postback',
+  path: '/api/public/postback',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/admin': typeof AuthenticatedAdminRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/deposit': typeof AuthenticatedDepositRoute
+  '/earn-coins': typeof AuthenticatedEarnCoinsRoute
+  '/history': typeof AuthenticatedHistoryRoute
+  '/packages': typeof AuthenticatedPackagesRoute
+  '/profile': typeof AuthenticatedProfileRoute
+  '/referral': typeof AuthenticatedReferralRoute
+  '/tasks': typeof AuthenticatedTasksRoute
+  '/wallet': typeof AuthenticatedWalletRoute
+  '/withdraw': typeof AuthenticatedWithdrawRoute
+  '/task/$id': typeof AuthenticatedTaskIdRoute
+  '/api/public/postback': typeof ApiPublicPostbackRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/admin': typeof AuthenticatedAdminRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/deposit': typeof AuthenticatedDepositRoute
+  '/earn-coins': typeof AuthenticatedEarnCoinsRoute
+  '/history': typeof AuthenticatedHistoryRoute
+  '/packages': typeof AuthenticatedPackagesRoute
+  '/profile': typeof AuthenticatedProfileRoute
+  '/referral': typeof AuthenticatedReferralRoute
+  '/tasks': typeof AuthenticatedTasksRoute
+  '/wallet': typeof AuthenticatedWalletRoute
+  '/withdraw': typeof AuthenticatedWithdrawRoute
+  '/task/$id': typeof AuthenticatedTaskIdRoute
+  '/api/public/postback': typeof ApiPublicPostbackRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/deposit': typeof AuthenticatedDepositRoute
+  '/_authenticated/earn-coins': typeof AuthenticatedEarnCoinsRoute
+  '/_authenticated/history': typeof AuthenticatedHistoryRoute
+  '/_authenticated/packages': typeof AuthenticatedPackagesRoute
+  '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/referral': typeof AuthenticatedReferralRoute
+  '/_authenticated/tasks': typeof AuthenticatedTasksRoute
+  '/_authenticated/wallet': typeof AuthenticatedWalletRoute
+  '/_authenticated/withdraw': typeof AuthenticatedWithdrawRoute
+  '/_authenticated/task/$id': typeof AuthenticatedTaskIdRoute
+  '/api/public/postback': typeof ApiPublicPostbackRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/forgot-password'
+    | '/login'
+    | '/register'
+    | '/reset-password'
+    | '/admin'
+    | '/dashboard'
+    | '/deposit'
+    | '/earn-coins'
+    | '/history'
+    | '/packages'
+    | '/profile'
+    | '/referral'
+    | '/tasks'
+    | '/wallet'
+    | '/withdraw'
+    | '/task/$id'
+    | '/api/public/postback'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/forgot-password'
+    | '/login'
+    | '/register'
+    | '/reset-password'
+    | '/admin'
+    | '/dashboard'
+    | '/deposit'
+    | '/earn-coins'
+    | '/history'
+    | '/packages'
+    | '/profile'
+    | '/referral'
+    | '/tasks'
+    | '/wallet'
+    | '/withdraw'
+    | '/task/$id'
+    | '/api/public/postback'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/forgot-password'
+    | '/login'
+    | '/register'
+    | '/reset-password'
+    | '/_authenticated/admin'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/deposit'
+    | '/_authenticated/earn-coins'
+    | '/_authenticated/history'
+    | '/_authenticated/packages'
+    | '/_authenticated/profile'
+    | '/_authenticated/referral'
+    | '/_authenticated/tasks'
+    | '/_authenticated/wallet'
+    | '/_authenticated/withdraw'
+    | '/_authenticated/task/$id'
+    | '/api/public/postback'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
+  LoginRoute: typeof LoginRoute
+  RegisterRoute: typeof RegisterRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
+  ApiPublicPostbackRoute: typeof ApiPublicPostbackRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +269,176 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/deposit': {
+      id: '/_authenticated/deposit'
+      path: '/deposit'
+      fullPath: '/deposit'
+      preLoaderRoute: typeof AuthenticatedDepositRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/earn-coins': {
+      id: '/_authenticated/earn-coins'
+      path: '/earn-coins'
+      fullPath: '/earn-coins'
+      preLoaderRoute: typeof AuthenticatedEarnCoinsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/history': {
+      id: '/_authenticated/history'
+      path: '/history'
+      fullPath: '/history'
+      preLoaderRoute: typeof AuthenticatedHistoryRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/packages': {
+      id: '/_authenticated/packages'
+      path: '/packages'
+      fullPath: '/packages'
+      preLoaderRoute: typeof AuthenticatedPackagesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/referral': {
+      id: '/_authenticated/referral'
+      path: '/referral'
+      fullPath: '/referral'
+      preLoaderRoute: typeof AuthenticatedReferralRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/tasks': {
+      id: '/_authenticated/tasks'
+      path: '/tasks'
+      fullPath: '/tasks'
+      preLoaderRoute: typeof AuthenticatedTasksRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/wallet': {
+      id: '/_authenticated/wallet'
+      path: '/wallet'
+      fullPath: '/wallet'
+      preLoaderRoute: typeof AuthenticatedWalletRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/withdraw': {
+      id: '/_authenticated/withdraw'
+      path: '/withdraw'
+      fullPath: '/withdraw'
+      preLoaderRoute: typeof AuthenticatedWithdrawRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/task/$id': {
+      id: '/_authenticated/task/$id'
+      path: '/task/$id'
+      fullPath: '/task/$id'
+      preLoaderRoute: typeof AuthenticatedTaskIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/public/postback': {
+      id: '/api/public/postback'
+      path: '/api/public/postback'
+      fullPath: '/api/public/postback'
+      preLoaderRoute: typeof ApiPublicPostbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedDepositRoute: typeof AuthenticatedDepositRoute
+  AuthenticatedEarnCoinsRoute: typeof AuthenticatedEarnCoinsRoute
+  AuthenticatedHistoryRoute: typeof AuthenticatedHistoryRoute
+  AuthenticatedPackagesRoute: typeof AuthenticatedPackagesRoute
+  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedReferralRoute: typeof AuthenticatedReferralRoute
+  AuthenticatedTasksRoute: typeof AuthenticatedTasksRoute
+  AuthenticatedWalletRoute: typeof AuthenticatedWalletRoute
+  AuthenticatedWithdrawRoute: typeof AuthenticatedWithdrawRoute
+  AuthenticatedTaskIdRoute: typeof AuthenticatedTaskIdRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedDepositRoute: AuthenticatedDepositRoute,
+  AuthenticatedEarnCoinsRoute: AuthenticatedEarnCoinsRoute,
+  AuthenticatedHistoryRoute: AuthenticatedHistoryRoute,
+  AuthenticatedPackagesRoute: AuthenticatedPackagesRoute,
+  AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedReferralRoute: AuthenticatedReferralRoute,
+  AuthenticatedTasksRoute: AuthenticatedTasksRoute,
+  AuthenticatedWalletRoute: AuthenticatedWalletRoute,
+  AuthenticatedWithdrawRoute: AuthenticatedWithdrawRoute,
+  AuthenticatedTaskIdRoute: AuthenticatedTaskIdRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  ForgotPasswordRoute: ForgotPasswordRoute,
+  LoginRoute: LoginRoute,
+  RegisterRoute: RegisterRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
+  ApiPublicPostbackRoute: ApiPublicPostbackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
