@@ -72,11 +72,18 @@ function AdminPage() {
     }
   }
 
+  useEffect(() => {
+    if (me && !me.isAdmin) {
+      toast.error("Admins only");
+      void navigate({ to: "/dashboard", replace: true });
+    }
+  }, [me, navigate]);
+
   if (me && !me.isAdmin) {
     return (
       <AppShell title="Admin">
         <p className="rounded-3xl border border-border bg-white p-6 text-sm text-muted-foreground">
-          You do not have access to the admin panel.
+          Redirecting…
         </p>
       </AppShell>
     );
