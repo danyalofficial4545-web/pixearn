@@ -71,13 +71,9 @@ function RegisterPage() {
         email: form.email.trim(),
         password: form.password,
       });
-      if (signInError) {
-        toast.success("Account created. Please confirm your email, then sign in.");
-        void navigate({ to: "/login" });
-        return;
-      }
-      toast.success("Welcome to PixEarn!");
-      void navigate({ to: "/dashboard" });
+      if (signInError) throw new Error(signInError.message);
+      toast.success("Account Created Successfully");
+      void navigate({ to: "/dashboard", replace: true });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Registration failed");
     } finally {
