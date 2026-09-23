@@ -1,4 +1,4 @@
-import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -29,7 +29,6 @@ export const Route = createFileRoute("/login")({
 });
 
 function LoginPage() {
-  const navigate = useNavigate();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -44,11 +43,13 @@ function LoginPage() {
         if (!res.email) throw new Error("No account found with that username.");
         email = res.email;
       }
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) throw new Error(error.message);
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      if (!data.session || !data.user) throw new Error("Login session could not be created.");
       toast.success("Welcome back!");
-      void navigate({ to: "/dashboard", replace: true });
+      window.location.assign("/dashboard");
     } catch (err) {
+      console.error("PixEarn login failed", err);
       toast.error(err instanceof Error ? err.message : "Login failed");
     } finally {
       setLoading(false);
