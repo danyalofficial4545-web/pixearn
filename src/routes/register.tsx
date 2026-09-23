@@ -1,5 +1,6 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PixEarnLogo } from "@/components/PixEarnLogo";
@@ -13,6 +14,11 @@ export const Route = createFileRoute("/register")({
   validateSearch: (search: Record<string, unknown>): Search => ({
     ...(typeof search["ref"] === "string" ? { ref: search["ref"] } : {}),
   }),
+  ssr: false,
+  beforeLoad: async () => {
+    const { data } = await supabase.auth.getUser();
+    if (data.user) throw redirect({ to: "/dashboard" });
+  },
   head: () => ({
     meta: [
       { title: "Create your PixEarn account" },
@@ -65,13 +71,9 @@ function RegisterPage() {
         email: form.email.trim(),
         password: form.password,
       });
-      if (signInError) {
-        toast.success("Account created. Please confirm your email, then sign in.");
-        void navigate({ to: "/login" });
-        return;
-      }
-      toast.success("Welcome to PixEarn!");
-      void navigate({ to: "/dashboard" });
+      if (signInError) throw new Error(signInError.message);
+      toast.success("Account Created Successfully");
+      void navigate({ to: "/dashboard", replace: true });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Registration failed");
     } finally {
@@ -138,8 +140,19 @@ function RegisterPage() {
               required
             />
           </div>
-          <Button type="submit" disabled={loading} className="h-11 w-full rounded-xl">
-            {loading ? "Creating…" : "Register"}
+          <Button
+            type="submit"
+            disabled={loading}
+            className="h-11 w-full rounded-xl disabled:opacity-70"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 size-4 animate-spin" />
+                Creating account…
+              </>
+            ) : (
+              "Register"
+            )}
           </Button>
           <p className="text-center text-xs text-muted-foreground">
             Already have an account?{" "}
