@@ -1,5 +1,6 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { resolveLoginEmail } from "@/lib/app.functions";
@@ -9,6 +10,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export const Route = createFileRoute("/login")({
+  ssr: false,
+  beforeLoad: async () => {
+    const { data } = await supabase.auth.getUser();
+    if (data.user) throw redirect({ to: "/dashboard" });
+  },
   head: () => ({
     meta: [
       { title: "Login — PixEarn" },
@@ -81,8 +87,19 @@ function LoginPage() {
               required
             />
           </div>
-          <Button type="submit" disabled={loading} className="h-11 w-full rounded-xl">
-            {loading ? "Signing in…" : "Login"}
+          <Button
+            type="submit"
+            disabled={loading}
+            className="h-11 w-full rounded-xl disabled:opacity-70"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 size-4 animate-spin" />
+                Logging in…
+              </>
+            ) : (
+              "Login"
+            )}
           </Button>
           <div className="flex items-center justify-between text-xs">
             <Link to="/forgot-password" className="text-primary hover:underline">

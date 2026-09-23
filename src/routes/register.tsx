@@ -1,5 +1,6 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PixEarnLogo } from "@/components/PixEarnLogo";
@@ -13,6 +14,11 @@ export const Route = createFileRoute("/register")({
   validateSearch: (search: Record<string, unknown>): Search => ({
     ...(typeof search["ref"] === "string" ? { ref: search["ref"] } : {}),
   }),
+  ssr: false,
+  beforeLoad: async () => {
+    const { data } = await supabase.auth.getUser();
+    if (data.user) throw redirect({ to: "/dashboard" });
+  },
   head: () => ({
     meta: [
       { title: "Create your PixEarn account" },
