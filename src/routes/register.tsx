@@ -1,4 +1,4 @@
-import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -33,7 +33,6 @@ export const Route = createFileRoute("/register")({
 });
 
 function RegisterPage() {
-  const navigate = useNavigate();
   const { ref } = Route.useSearch();
   const [form, setForm] = useState({ email: "", username: "", password: "", confirm: "" });
   const [loading, setLoading] = useState(false);
@@ -54,7 +53,7 @@ function RegisterPage() {
     }
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email: form.email.trim(),
         password: form.password,
         options: {
@@ -65,16 +64,20 @@ function RegisterPage() {
           },
         },
       });
-      if (error) throw new Error(error.message);
+      if (error) throw error;
 
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: form.email.trim(),
-        password: form.password,
-      });
-      if (signInError) throw new Error(signInError.message);
+      if (!data.session) {
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+          email: form.email.trim(),
+          password: form.password,
+        });
+        if (signInError) throw signInError;
+        if (!signInData.session) throw new Error("Account created, but login could not be completed.");
+      }
       toast.success("Account Created Successfully");
-      void navigate({ to: "/dashboard", replace: true });
+      window.location.assign("/dashboard");
     } catch (err) {
+      console.error("PixEarn registration failed", err);
       toast.error(err instanceof Error ? err.message : "Registration failed");
     } finally {
       setLoading(false);
