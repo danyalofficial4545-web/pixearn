@@ -140,8 +140,19 @@ function RegisterPage() {
               required
             />
           </div>
-          <Button type="submit" disabled={loading} className="h-11 w-full rounded-xl">
-            {loading ? "Creating…" : "Register"}
+          <Button
+            type="submit"
+            disabled={loading}
+            className="h-11 w-full rounded-xl disabled:opacity-70"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 size-4 animate-spin" />
+                Creating account…
+              </>
+            ) : (
+              "Register"
+            )}
           </Button>
           <p className="text-center text-xs text-muted-foreground">
             Already have an account?{" "}
