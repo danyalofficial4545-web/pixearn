@@ -27,7 +27,7 @@ const nav = [
 ] as const;
 
 export function AppShell({ children, title }: { children: ReactNode; title?: string }) {
-  const { data } = useMe();
+  const { data, isError, refetch } = useMe();
   const navigate = useNavigate();
   const qc = useQueryClient();
 
@@ -52,7 +52,15 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
           </Link>
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-semibold">
-              {profile ? `@${profile.username}` : "Loading…"}
+              {profile ? (
+                `@${profile.username}`
+              ) : isError ? (
+                <button onClick={() => void refetch()} className="text-destructive underline">
+                  Connection error — retry
+                </button>
+              ) : (
+                "Loading…"
+              )}
             </p>
             <p className="truncate text-xs text-muted-foreground">
               {title ?? "Earning made simple"}
