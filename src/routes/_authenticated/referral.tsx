@@ -40,7 +40,7 @@ function ReferralPage() {
     },
   });
   const coinsPerPkr = Number(me?.settings?.["coins_per_pkr"] ?? 100);
-  const userName = me?.profile?.username || "danyal955163";
+  const userName = me?.profile?.username || "";
   const link = `https://pixearn.vercel.app/register?ref=${userName}`;
 
   async function copyLink() {

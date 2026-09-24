@@ -38,9 +38,10 @@ function ProfilePage() {
   const user = data?.profile;
   const profile = data?.profile;
   const coinsPerPkr = Number(data?.settings?.["coins_per_pkr"] ?? 100);
-  const userName = user?.username || profile?.username || "danyal955163";
-  const referralCode = userName;
-  const referralLink = `https://pixearn.vercel.app/register?ref=${userName}`;
+  const code = user?.username || profile?.username || "";
+  const userName = code;
+  const referralCode = code;
+  const referralLink = `https://pixearn.vercel.app/register?ref=${code}`;
   const userRole = (user as { role?: string } | null | undefined)?.role;
   const isAdmin =
     user?.email?.toLowerCase() === "muhammaddanyal4545@gmail.com" ||

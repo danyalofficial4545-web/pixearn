@@ -68,7 +68,8 @@ function RegisterPage() {
         options: {
           emailRedirectTo: window.location.origin,
           data: {
-            ...(username ? { username } : {}),
+            username,
+            referral_code: username,
             ...(savedRef ? { ref: savedRef } : {}),
           },
         },
