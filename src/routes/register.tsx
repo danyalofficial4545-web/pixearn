@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { completeRegistration } from "@/lib/app.functions";
 import { PixEarnLogo } from "@/components/PixEarnLogo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -57,6 +58,10 @@ function RegisterPage() {
       const email = form.email.trim().toLowerCase();
       const savedRef = window.localStorage.getItem("pixearn_referral_code") ?? ref;
       const username = form.username.trim().toLowerCase();
+      if (!/^[a-z0-9_]{3,30}$/.test(username)) {
+        toast.error("Username must be 3–30 characters using letters, numbers, or underscores");
+        return;
+      }
       const { data, error } = await supabase.auth.signUp({
         email,
         password: form.password,
@@ -79,9 +84,12 @@ function RegisterPage() {
         if (!signInData.session)
           throw new Error("Account created, but login could not be completed.");
       }
+      await completeRegistration({
+        data: { referralUsername: savedRef?.trim().toLowerCase() || undefined },
+      });
       window.localStorage.removeItem("pixearn_referral_code");
       toast.success("Account Created Successfully");
-      window.location.assign("/dashboard");
+      window.location.assign("/");
     } catch (err) {
       console.error("PixEarn registration failed", err);
       toast.error("Server error, please try again");
@@ -139,13 +147,15 @@ function RegisterPage() {
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="username">Username (optional)</Label>
+                <Label htmlFor="username">Username</Label>
                 <Input
                   id="username"
                   value={form.username}
                   onChange={(e) => set("username", e.target.value)}
-                  placeholder="Leave blank to auto-generate"
+                  placeholder="your_username"
                   minLength={3}
+                  maxLength={30}
+                  required
                 />
               </div>
               <div className="space-y-1.5">

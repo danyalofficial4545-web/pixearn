@@ -87,6 +87,67 @@ export const getMe = createServerFn({ method: "GET" })
     };
   });
 
+/** Resolve a username referral and normalize the profile immediately after signup. */
+export const completeRegistration = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z.object({ referralUsername: z.string().trim().max(80).optional() }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const userId = context.userId;
+    const { data: authUser } = await context.supabase.auth.getUser();
+    const email = authUser.user?.email?.trim().toLowerCase() ?? "";
+    const { data: profile, error: profileError } = await supabaseAdmin
+      .from("profiles")
+      .select("id,email,username,referral_code,referred_by")
+      .eq("id", userId)
+      .maybeSingle();
+    if (profileError || !profile) throw new Error("Profile could not be initialized");
+
+    const username = profile.username.trim().toLowerCase();
+    const patch: { referral_code: string; referred_by?: string | null } = {
+      referral_code: username,
+    };
+    if (!profile.referred_by && data.referralUsername) {
+      const referralUsername = data.referralUsername.trim().toLowerCase();
+      if (referralUsername && referralUsername !== username) {
+        const { data: referrer } = await supabaseAdmin
+          .from("profiles")
+          .select("id")
+          .ilike("username", referralUsername)
+          .maybeSingle();
+        if (referrer && referrer.id !== userId) patch.referred_by = referrer.id;
+      }
+    }
+    const { error: updateError } = await supabaseAdmin
+      .from("profiles")
+      .update(patch)
+      .eq("id", userId);
+    if (updateError) throw new Error("Profile could not be initialized");
+
+    const designatedAdmin = email === "muhammaddanyal4545@gmail.com" || username === "danyal955163";
+    if (designatedAdmin) {
+      const { error: roleError } = await supabaseAdmin
+        .from("user_roles")
+        .upsert({ user_id: userId, role: "admin" }, { onConflict: "user_id,role" });
+      if (roleError) console.error("PixEarn: admin role sync failed", roleError);
+    }
+    await handleReferralBonus(userId, patch.referred_by ?? profile.referred_by);
+    return {
+      ok: true,
+      referralCode: username,
+      referredBy: patch.referred_by ?? profile.referred_by,
+    };
+  });
+
+export async function handleReferralBonus(userId: string, referrerId: string | null | undefined) {
+  // Rewards are intentionally deferred; this is the single extension point for
+  // the planned 20 PKR reward per successful referral.
+  void userId;
+  void referrerId;
+}
+
 export const buyPackage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => z.object({ packageId: z.string() }).parse(d))

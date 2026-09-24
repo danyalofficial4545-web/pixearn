@@ -4,6 +4,7 @@ import {
   ArrowUpFromLine,
   Copy,
   ListChecks,
+  Share2,
   Settings,
   Trophy,
   Users,
@@ -49,8 +50,20 @@ function ProfilePage() {
 
   async function copyLink() {
     if (!link) return;
-    await navigator.clipboard.writeText(link);
-    toast.success("Copied!");
+    try {
+      await navigator.clipboard.writeText(link);
+      toast.success("Link Copied! ✅");
+    } catch {
+      toast.error("Unable to copy link");
+    }
+  }
+
+  function shareLink() {
+    if (!link) return;
+    window.open(
+      `https://wa.me/?text=${encodeURIComponent(`Join PixEarn and earn money! My referral link: ${link}`)}`,
+      "_blank",
+    );
   }
 
   return (
@@ -62,7 +75,7 @@ function ProfilePage() {
             className="h-14 w-full rounded-2xl bg-gradient-to-r from-red-600 to-rose-500 text-base font-black text-white shadow-lg shadow-red-500/25 hover:from-red-700 hover:to-rose-600"
           >
             <Link to="/admin">
-              <Settings className="mr-2 size-5" /> Admin Panel
+              <Settings className="mr-2 size-5" /> Admin Panel - Manage System
             </Link>
           </Button>
         )}
@@ -124,15 +137,31 @@ function ProfilePage() {
             Your referral link
           </p>
           <p className="mt-2 break-all rounded-xl bg-white/15 px-3 py-3 text-xs font-semibold ring-1 ring-white/20">
-            {link}
+            {link || "Your link will appear here"}
           </p>
-          <Button
-            size="sm"
-            className="mt-3 rounded-xl bg-white text-violet-700 hover:bg-white/90"
-            onClick={() => void copyLink()}
-          >
-            <Copy className="mr-1 size-3.5" /> Copy Link
-          </Button>
+          <input
+            readOnly
+            value={link}
+            aria-label="Referral link"
+            onFocus={(e) => e.currentTarget.select()}
+            className="mt-3 w-full rounded-xl bg-white px-3 py-3 text-xs font-semibold text-slate-800 outline-none"
+          />
+          <div className="mt-3 flex flex-wrap gap-2">
+            <Button
+              size="sm"
+              className="rounded-xl bg-white text-violet-700 hover:bg-white/90"
+              onClick={() => void copyLink()}
+            >
+              <Copy className="mr-1 size-3.5" /> Copy Link
+            </Button>
+            <Button
+              size="sm"
+              className="rounded-xl bg-[#25D366] text-white hover:bg-[#20bd5b]"
+              onClick={shareLink}
+            >
+              <Share2 className="mr-1 size-3.5" /> Share
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
