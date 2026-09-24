@@ -40,33 +40,20 @@ function ReferralPage() {
     },
   });
   const coinsPerPkr = Number(me?.settings?.["coins_per_pkr"] ?? 100);
-  const username = me?.profile?.username;
-  const link =
-    typeof window !== "undefined" && username
-      ? `${window.location.origin}/register?ref=${encodeURIComponent(username)}`
-      : "";
-  const shareText = `Join PixEarn and start earning: ${link}`;
+  const userName = me?.profile?.username || "danyal955163";
+  const link = `https://pixearn.vercel.app/register?ref=${userName}`;
 
   async function copyLink() {
-    if (!link) return;
-    try {
-      if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(link);
-      } else {
-        const input = document.createElement("textarea");
-        input.value = link;
-        input.style.position = "fixed";
-        input.style.opacity = "0";
-        document.body.appendChild(input);
-        input.select();
-        document.execCommand("copy");
-        input.remove();
-      }
-      toast.success("Copied!");
-    } catch (error) {
-      console.error("PixEarn: clipboard copy failed", error);
-      toast.error("Select the link and copy it manually");
-    }
+    await navigator.clipboard.writeText(link);
+    alert(`Copied: ${link}`);
+    toast.success("Link Copied! ✅");
+  }
+
+  function shareLink() {
+    window.open(
+      `https://wa.me/?text=${encodeURIComponent("Join PixEarn! My link: " + link)}`,
+      "_blank",
+    );
   }
 
   return (
@@ -94,7 +81,7 @@ function ReferralPage() {
               <Link2 className="size-4 shrink-0 text-indigo-600" />
               <input
                 readOnly
-                value={link || "Your link will appear here"}
+                value={link}
                 onFocus={(e) => e.currentTarget.select()}
                 className="min-w-0 flex-1 bg-transparent outline-none"
               />
@@ -108,17 +95,11 @@ function ReferralPage() {
                 <Copy className="mr-1 size-4" /> Copy Link
               </Button>
               <Button
-                asChild
                 size="sm"
                 className="rounded-xl bg-[#25D366] text-white hover:bg-[#20bd5b]"
+                onClick={shareLink}
               >
-                <a
-                  href={link ? `https://wa.me/?text=${encodeURIComponent(shareText)}` : "#"}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <Share2 className="mr-1 size-4" /> Share on WhatsApp
-                </a>
+                <Share2 className="mr-1 size-4" /> Share on WhatsApp
               </Button>
             </div>
           </div>

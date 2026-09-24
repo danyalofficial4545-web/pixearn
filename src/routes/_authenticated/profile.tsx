@@ -5,7 +5,6 @@ import {
   Copy,
   ListChecks,
   Share2,
-  Settings,
   Trophy,
   Users,
   WalletCards,
@@ -36,32 +35,28 @@ export const Route = createFileRoute("/_authenticated/profile")({
 
 function ProfilePage() {
   const { data } = useMe();
-  const p = data?.profile;
+  const user = data?.profile;
+  const profile = data?.profile;
   const coinsPerPkr = Number(data?.settings?.["coins_per_pkr"] ?? 100);
-  const username = p?.username?.trim() ?? "";
-  const link =
-    typeof window !== "undefined" && username
-      ? `${window.location.origin}/register?ref=${encodeURIComponent(username)}`
-      : "";
+  const userName = user?.username || profile?.username || "danyal955163";
+  const referralCode = userName;
+  const referralLink = `https://pixearn.vercel.app/register?ref=${userName}`;
+  const userRole = (user as { role?: string } | null | undefined)?.role;
   const isAdmin =
-    data?.isAdmin === true ||
-    p?.email?.toLowerCase() === "muhammaddanyal4545@gmail.com" ||
-    p?.username?.toLowerCase() === "danyal955163";
+    user?.email?.toLowerCase() === "muhammaddanyal4545@gmail.com" ||
+    user?.username?.toLowerCase() === "danyal955163" ||
+    userRole === "admin" ||
+    data?.isAdmin === true;
 
   async function copyLink() {
-    if (!link) return;
-    try {
-      await navigator.clipboard.writeText(link);
-      toast.success("Link Copied! ✅");
-    } catch {
-      toast.error("Unable to copy link");
-    }
+    await navigator.clipboard.writeText(referralLink);
+    alert(`Copied: ${referralLink}`);
+    toast.success("Link Copied! ✅");
   }
 
   function shareLink() {
-    if (!link) return;
     window.open(
-      `https://wa.me/?text=${encodeURIComponent(`Join PixEarn and earn money! My referral link: ${link}`)}`,
+      `https://wa.me/?text=${encodeURIComponent(`Join PixEarn! My link: ${referralLink}`)}`,
       "_blank",
     );
   }
@@ -70,27 +65,32 @@ function ProfilePage() {
     <AppShell title="Profile">
       <div className="space-y-5">
         {isAdmin && (
-          <Button
-            asChild
-            className="h-14 w-full rounded-2xl bg-gradient-to-r from-red-600 to-rose-500 text-base font-black text-white shadow-lg shadow-red-500/25 hover:from-red-700 hover:to-rose-600"
+          <a
+            href="/admin"
+            style={{
+              display: "block",
+              background: "linear-gradient(135deg,#FF0000,#FF8C00)",
+              color: "white",
+              padding: "18px",
+              borderRadius: "14px",
+              textAlign: "center",
+              fontWeight: "900",
+              fontSize: "18px",
+              marginBottom: "16px",
+              textDecoration: "none",
+            }}
           >
-            <Link to="/admin">
-              <Settings className="mr-2 size-5" /> Admin Panel - Manage System
-            </Link>
-          </Button>
+            ⚙️ ADMIN PANEL - Click to Manage
+          </a>
         )}
 
         <div className="flex items-start gap-4 rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
           <PixEarnLogo size={64} animated showRing={false} />
           <div className="min-w-0 flex-1">
-            <p className="truncate text-lg font-black">
-              {p?.username ? `@${p.username}` : "Profile unavailable"}
-            </p>
-            <p className="truncate text-sm text-muted-foreground">
-              {p?.email ?? "Account details are loading"}
-            </p>
+            <h2 className="truncate text-lg font-black">@{userName}</h2>
+            <p className="truncate text-sm text-muted-foreground">{user?.email}</p>
             <p className="mt-1 text-xs text-muted-foreground">
-              Joined {p?.created_at ? fmtDate(p.created_at) : "recently"}
+              {user?.created_at ? `Joined ${fmtDate(user.created_at)}` : ""}
             </p>
           </div>
           <div className="flex shrink-0 flex-col gap-2">
@@ -117,19 +117,19 @@ function ProfilePage() {
           <Stat
             icon={WalletCards}
             label="Total earnings"
-            value={`${fmtCoins(p?.total_earned ?? 0)} (${fmtPkr(p?.total_earned ?? 0, coinsPerPkr)})`}
+            value={`${fmtCoins(user?.total_earned ?? 0)} (${fmtPkr(user?.total_earned ?? 0, coinsPerPkr)})`}
             className="from-emerald-100 to-green-50 text-emerald-800"
           />
           <Stat
             icon={ListChecks}
             label="Tasks completed"
-            value={String(p?.tasks_completed ?? 0)}
+            value={String(user?.tasks_completed ?? 0)}
             className="from-blue-100 to-sky-50 text-blue-800"
           />
           <Stat
             icon={Users}
             label="Referral code"
-            value={p?.username || "—"}
+            value={referralCode}
             className="from-violet-100 to-purple-50 text-violet-800"
           />
         </div>
@@ -139,11 +139,11 @@ function ProfilePage() {
             Your referral link
           </p>
           <p className="mt-2 break-all rounded-xl bg-white/15 px-3 py-3 text-xs font-semibold ring-1 ring-white/20">
-            {link || "Your link will appear here"}
+            {referralLink}
           </p>
           <input
             readOnly
-            value={link}
+            value={referralLink}
             aria-label="Referral link"
             onFocus={(e) => e.currentTarget.select()}
             className="mt-3 w-full rounded-xl bg-white px-3 py-3 text-xs font-semibold text-slate-800 outline-none"

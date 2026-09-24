@@ -85,7 +85,7 @@ function DashboardPage() {
             value={String(profile?.tasks_completed ?? 0)}
             tone="green"
           />
-          <StatBox icon={Gift} label="Referrals" value="—" tone="amber" />
+          <StatBox icon={Gift} label="Referrals" value="0" tone="amber" />
           <StatBox
             icon={CalendarClock}
             label="Today"

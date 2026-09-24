@@ -95,8 +95,8 @@ function DepositPage() {
           {accounts.map((acc) => (
             <div key={acc.id} className="rounded-3xl border border-border bg-white p-4">
               <p className="text-xs uppercase tracking-wide text-muted-foreground">{acc.label}</p>
-              <p className="mt-1 break-all text-sm font-bold">{acc.number ?? "Not set"}</p>
-              <p className="text-xs text-muted-foreground">{acc.title ?? "—"}</p>
+              <p className="mt-1 break-all text-sm font-bold">{acc.number ?? ""}</p>
+              <p className="text-xs text-muted-foreground">{acc.title ?? ""}</p>
               {acc.number && (
                 <button
                   type="button"
