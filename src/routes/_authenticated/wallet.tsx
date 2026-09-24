@@ -7,6 +7,7 @@ import { useMe } from "@/hooks/useMe";
 import { getHistory } from "@/lib/app.functions";
 import { fmtCoins, fmtDate, fmtPkr, fmtUsd } from "@/lib/money";
 import { cn } from "@/lib/utils";
+import { withQueryTimeout } from "@/lib/query";
 
 export const Route = createFileRoute("/_authenticated/wallet")({
   head: () => ({
@@ -28,7 +29,11 @@ export const Route = createFileRoute("/_authenticated/wallet")({
 function WalletPage() {
   const { data: me } = useMe();
   const fetchHistory = useServerFn(getHistory);
-  const { data } = useQuery({ queryKey: ["history"], queryFn: () => fetchHistory() });
+  const { data } = useQuery({
+    queryKey: ["history"],
+    retry: false,
+    queryFn: () => withQueryTimeout(fetchHistory()),
+  });
   const [tab, setTab] = useState<"deposit" | "earning">("deposit");
 
   const coinsPerPkr = Number(me?.settings?.["coins_per_pkr"] ?? 100);

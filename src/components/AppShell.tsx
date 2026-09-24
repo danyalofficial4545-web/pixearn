@@ -27,7 +27,7 @@ const nav = [
 ] as const;
 
 export function AppShell({ children, title }: { children: ReactNode; title?: string }) {
-  const { data, isError, refetch } = useMe();
+  const { data } = useMe();
   const navigate = useNavigate();
   const qc = useQueryClient();
 
@@ -52,15 +52,7 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
           </Link>
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-semibold">
-              {profile ? (
-                `@${profile.username}`
-              ) : isError ? (
-                <button onClick={() => void refetch()} className="text-destructive underline">
-                  Connection error — retry
-                </button>
-              ) : (
-                "Loading…"
-              )}
+              {profile ? `@${profile.username}` : "Welcome to PixEarn"}
             </p>
             <p className="truncate text-xs text-muted-foreground">
               {title ?? "Earning made simple"}

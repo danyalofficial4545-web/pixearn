@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { AppShell } from "@/components/AppShell";
 import { getHistory } from "@/lib/app.functions";
 import { fmtDate } from "@/lib/money";
+import { withQueryTimeout } from "@/lib/query";
 
 export const Route = createFileRoute("/_authenticated/history")({
   head: () => ({
@@ -24,7 +25,11 @@ export const Route = createFileRoute("/_authenticated/history")({
 
 function HistoryPage() {
   const fetchHistory = useServerFn(getHistory);
-  const { data } = useQuery({ queryKey: ["history"], queryFn: () => fetchHistory() });
+  const { data } = useQuery({
+    queryKey: ["history"],
+    retry: false,
+    queryFn: () => withQueryTimeout(fetchHistory()),
+  });
 
   return (
     <AppShell title="History">

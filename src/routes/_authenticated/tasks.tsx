@@ -8,6 +8,7 @@ import { useMe } from "@/hooks/useMe";
 import { getTasks } from "@/lib/app.functions";
 import { fmtCoins, fmtPkr } from "@/lib/money";
 import { cn } from "@/lib/utils";
+import { withQueryTimeout } from "@/lib/query";
 
 export const Route = createFileRoute("/_authenticated/tasks")({
   head: () => ({
@@ -26,7 +27,11 @@ export const Route = createFileRoute("/_authenticated/tasks")({
 function TasksPage() {
   const { data: me } = useMe();
   const fetchTasks = useServerFn(getTasks);
-  const { data } = useQuery({ queryKey: ["tasks"], queryFn: () => fetchTasks() });
+  const { data } = useQuery({
+    queryKey: ["tasks"],
+    retry: false,
+    queryFn: () => withQueryTimeout(fetchTasks()),
+  });
 
   const coinsPerPkr = Number(me?.settings?.["coins_per_pkr"] ?? 100);
   const limit = me?.activePackage?.daily_tasks ?? 1;
