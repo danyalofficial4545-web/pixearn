@@ -2,7 +2,10 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-type Ctx = { userId: string; supabase: { rpc: (fn: string, args: unknown) => Promise<{ data: unknown }> } };
+type Ctx = {
+  userId: string;
+  supabase: { rpc: (fn: string, args: unknown) => Promise<{ data: unknown }> };
+};
 
 async function assertAdmin(context: Ctx) {
   const { data } = await context.supabase.rpc("has_role", {
@@ -92,7 +95,11 @@ export const adminReviewDeposit = createServerFn({ method: "POST" })
       .eq("id", data.id);
 
     if (data.approve) {
-      await addDepositCoins(dep.user_id, Number(dep.coins), `Deposit ${dep.amount_pkr} PKR approved`);
+      await addDepositCoins(
+        dep.user_id,
+        Number(dep.coins),
+        `Deposit ${dep.amount_pkr} PKR approved`,
+      );
     }
     return { ok: true };
   });
@@ -105,7 +112,7 @@ export const adminReviewWithdrawal = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context as unknown as Ctx);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { addEarningCoins } = await import("./wallet.server");
+    const { addEarningCoins, payWithdrawalReferral } = await import("./wallet.server");
     const { data: w } = await supabaseAdmin
       .from("withdrawals")
       .select("*")
@@ -121,6 +128,8 @@ export const adminReviewWithdrawal = createServerFn({ method: "POST" })
     if (!data.approve) {
       // refund the reserved coins back to the earning wallet
       await addEarningCoins(w.user_id, Number(w.coins), "withdraw_refund", "Withdrawal rejected");
+    } else {
+      await payWithdrawalReferral(w.user_id, Number(w.coins));
     }
     return { ok: true };
   });

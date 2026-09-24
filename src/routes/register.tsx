@@ -1,5 +1,5 @@
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,10 +23,6 @@ export const Route = createFileRoute("/register")({
     meta: [
       { title: "Create your PixEarn account" },
       { name: "description", content: "Register on PixEarn and start earning coins today." },
-      { property: "og:title", content: "Create your PixEarn account" },
-      { property: "og:description", content: "Register on PixEarn and start earning coins today." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: RegisterPage,
@@ -34,8 +30,13 @@ export const Route = createFileRoute("/register")({
 
 function RegisterPage() {
   const { ref } = Route.useSearch();
+  const [showForm, setShowForm] = useState(!ref);
   const [form, setForm] = useState({ email: "", username: "", password: "", confirm: "" });
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (ref) window.localStorage.setItem("pixearn_referral_code", ref.trim().toLowerCase());
+  }, [ref]);
 
   function set(key: keyof typeof form, value: string) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -53,14 +54,17 @@ function RegisterPage() {
     }
     setLoading(true);
     try {
+      const email = form.email.trim().toLowerCase();
+      const savedRef = window.localStorage.getItem("pixearn_referral_code") ?? ref;
+      const username = form.username.trim().toLowerCase();
       const { data, error } = await supabase.auth.signUp({
-        email: form.email.trim(),
+        email,
         password: form.password,
         options: {
           emailRedirectTo: window.location.origin,
           data: {
-            username: form.username.trim().toLowerCase(),
-            ...(ref ? { ref } : {}),
+            ...(username ? { username } : {}),
+            ...(savedRef ? { ref: savedRef } : {}),
           },
         },
       });
@@ -68,17 +72,19 @@ function RegisterPage() {
 
       if (!data.session) {
         const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-          email: form.email.trim(),
+          email,
           password: form.password,
         });
         if (signInError) throw signInError;
-        if (!signInData.session) throw new Error("Account created, but login could not be completed.");
+        if (!signInData.session)
+          throw new Error("Account created, but login could not be completed.");
       }
+      window.localStorage.removeItem("pixearn_referral_code");
       toast.success("Account Created Successfully");
       window.location.assign("/dashboard");
     } catch (err) {
       console.error("PixEarn registration failed", err);
-      toast.error(err instanceof Error ? err.message : "Registration failed");
+      toast.error("Server error, please try again");
     } finally {
       setLoading(false);
     }
@@ -87,83 +93,104 @@ function RegisterPage() {
   return (
     <div className="grid min-h-screen place-items-center bg-[radial-gradient(120%_80%_at_50%_0%,#eef0ff_0%,#ffffff_60%)] px-4 py-10">
       <div className="w-full max-w-sm">
-        <div className="mb-6 grid place-items-center gap-3">
-          <PixEarnLogo size={120} animated />
-          <p className="text-sm text-muted-foreground">Create your free account</p>
-        </div>
-
-        <form
-          onSubmit={onSubmit}
-          className="space-y-4 rounded-3xl border border-border bg-white p-6 shadow-xl shadow-indigo-500/5"
-        >
-          {ref && (
-            <p className="rounded-xl bg-indigo-50 px-3 py-2 text-xs text-indigo-700">
-              Invited with referral code <b>{ref}</b>
-            </p>
-          )}
-          <div className="space-y-1.5">
-            <Label htmlFor="email">Email (Gmail)</Label>
-            <Input
-              id="email"
-              type="email"
-              value={form.email}
-              onChange={(e) => set("email", e.target.value)}
-              placeholder="you@gmail.com"
-              required
-            />
+        {!showForm ? (
+          <div className="grid gap-6 text-center">
+            <PixEarnLogo size={148} animated />
+            <div>
+              <h1 className="text-3xl font-extrabold tracking-tight">
+                Join PixEarn &amp; Start Earning
+              </h1>
+              <p className="mt-2 text-sm text-muted-foreground">
+                You have been invited to PixEarn.
+              </p>
+            </div>
+            <div className="grid gap-3">
+              <Button asChild className="h-11 rounded-xl">
+                <Link to="/login">Sign in</Link>
+              </Button>
+              <Button
+                className="h-11 rounded-xl"
+                variant="outline"
+                onClick={() => setShowForm(true)}
+              >
+                Sign up
+              </Button>
+            </div>
           </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="username">Username</Label>
-            <Input
-              id="username"
-              value={form.username}
-              onChange={(e) => set("username", e.target.value)}
-              placeholder="pixuser"
-              minLength={3}
-              required
-            />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              value={form.password}
-              onChange={(e) => set("password", e.target.value)}
-              required
-            />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="confirm">Confirm Password</Label>
-            <Input
-              id="confirm"
-              type="password"
-              value={form.confirm}
-              onChange={(e) => set("confirm", e.target.value)}
-              required
-            />
-          </div>
-          <Button
-            type="submit"
-            disabled={loading}
-            className="h-11 w-full rounded-xl disabled:opacity-70"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="mr-2 size-4 animate-spin" />
-                Creating account…
-              </>
-            ) : (
-              "Register"
-            )}
-          </Button>
-          <p className="text-center text-xs text-muted-foreground">
-            Already have an account?{" "}
-            <Link to="/login" className="text-primary hover:underline">
-              Login
-            </Link>
-          </p>
-        </form>
+        ) : (
+          <>
+            <div className="mb-6 grid place-items-center gap-3">
+              <PixEarnLogo size={120} animated />
+              <p className="text-sm text-muted-foreground">Create your free account</p>
+            </div>
+            <form
+              onSubmit={onSubmit}
+              className="space-y-4 rounded-3xl border border-border bg-white p-6 shadow-xl shadow-indigo-500/5"
+            >
+              <div className="space-y-1.5">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => set("email", e.target.value)}
+                  placeholder="you@gmail.com"
+                  required
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="username">Username (optional)</Label>
+                <Input
+                  id="username"
+                  value={form.username}
+                  onChange={(e) => set("username", e.target.value)}
+                  placeholder="Leave blank to auto-generate"
+                  minLength={3}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={form.password}
+                  onChange={(e) => set("password", e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="confirm">Confirm Password</Label>
+                <Input
+                  id="confirm"
+                  type="password"
+                  value={form.confirm}
+                  onChange={(e) => set("confirm", e.target.value)}
+                  required
+                />
+              </div>
+              <Button
+                type="submit"
+                disabled={loading}
+                className="h-11 w-full rounded-xl disabled:opacity-70"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 size-4 animate-spin" />
+                    Creating account…
+                  </>
+                ) : (
+                  "Register"
+                )}
+              </Button>
+              <p className="text-center text-xs text-muted-foreground">
+                Already have an account?{" "}
+                <Link to="/login" className="text-primary hover:underline">
+                  Login
+                </Link>
+              </p>
+            </form>
+          </>
+        )}
       </div>
     </div>
   );

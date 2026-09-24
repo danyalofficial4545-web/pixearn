@@ -97,7 +97,8 @@ function DashboardPage() {
             <p className="text-xs uppercase tracking-wide text-muted-foreground">Earned today</p>
             <p className="mt-1 text-3xl font-extrabold">{fmtCoins(data?.today.coins ?? 0)}</p>
             <p className="text-sm text-muted-foreground">
-              {fmtPkr(data?.today.coins ?? 0, coinsPerPkr)} · {data?.today.tasks ?? 0} tasks approved
+              {fmtPkr(data?.today.coins ?? 0, coinsPerPkr)} · {data?.today.tasks ?? 0} tasks
+              approved
             </p>
           </div>
         </div>

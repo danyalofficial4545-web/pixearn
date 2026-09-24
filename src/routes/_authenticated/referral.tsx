@@ -81,7 +81,9 @@ function ReferralPage() {
 
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="rounded-3xl border border-border bg-white p-5">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">Total referral earnings</p>
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">
+              Total referral earnings
+            </p>
             <p className="mt-1 text-2xl font-extrabold">{fmtCoins(data?.totalCoins ?? 0)}</p>
             <p className="text-sm text-muted-foreground">
               {fmtPkr(data?.totalCoins ?? 0, coinsPerPkr)}

@@ -78,15 +78,11 @@ function PackagesPage() {
                 <p className={active ? "text-xs text-white/80" : "text-xs text-muted-foreground"}>
                   {fmtCoins(Number(pkg.price_coins))} Coins
                 </p>
-                <ul
-                  className={`mt-4 space-y-1.5 text-sm ${active ? "" : "text-muted-foreground"}`}
-                >
+                <ul className={`mt-4 space-y-1.5 text-sm ${active ? "" : "text-muted-foreground"}`}>
                   <li>{pkg.daily_tasks} tasks per day</li>
                   <li>{fmtCoins(Number(pkg.daily_earning_coins))} coins daily</li>
                   <li>{pkg.validity_days ? `${pkg.validity_days} days` : "Lifetime"}</li>
-                  <li>
-                    Min withdraw {fmtPkr(Number(pkg.min_withdraw_coins), coinsPerPkr)}
-                  </li>
+                  <li>Min withdraw {fmtPkr(Number(pkg.min_withdraw_coins), coinsPerPkr)}</li>
                 </ul>
                 {active ? (
                   <p className="mt-5 flex items-center gap-1 text-sm font-semibold">

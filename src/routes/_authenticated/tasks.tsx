@@ -37,7 +37,10 @@ function TasksPage() {
       <div className="space-y-3">
         <div className="rounded-2xl border border-border bg-white px-4 py-3 text-sm">
           Your <b>{me?.activePackage?.name ?? "package"}</b> unlocks{" "}
-          <b>{limit} task{limit > 1 ? "s" : ""}</b> per day.
+          <b>
+            {limit} task{limit > 1 ? "s" : ""}
+          </b>{" "}
+          per day.
         </div>
 
         {(data?.tasks ?? []).map((task, index) => {

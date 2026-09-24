@@ -142,7 +142,10 @@ export const submitDeposit = createServerFn({ method: "POST" })
       tid: data.tid,
       screenshot_url: data.screenshotPath ?? null,
     });
-    if (error) throw new Error(error.message);
+    if (error) {
+      console.error("Deposit submission failed", error);
+      throw new Error("Server error, please try again");
+    }
     return { ok: true };
   });
 
@@ -201,7 +204,10 @@ export const submitWithdraw = createServerFn({ method: "POST" })
       account_title: data.accountTitle,
       account_number: data.accountNumber,
     });
-    if (error) throw new Error(error.message);
+    if (error) {
+      console.error("Withdrawal submission failed", error);
+      throw new Error("Server error, please try again");
+    }
     return { ok: true };
   });
 
@@ -258,7 +264,10 @@ export const submitTaskProof = createServerFn({ method: "POST" })
       game_user_id: data.gameUserId,
       screenshot_url: data.screenshotPath ?? null,
     });
-    if (error) throw new Error(error.message);
+    if (error) {
+      console.error("Task proof submission failed", error);
+      throw new Error("Server error, please try again");
+    }
     return { ok: true };
   });
 
@@ -308,10 +317,7 @@ export const getTasks = createServerFn({ method: "GET" })
         .select("*")
         .eq("active", true)
         .order("created_at", { ascending: false }),
-      supabaseAdmin
-        .from("task_submissions")
-        .select("task_id,status")
-        .eq("user_id", context.userId),
+      supabaseAdmin.from("task_submissions").select("task_id,status").eq("user_id", context.userId),
     ]);
     return {
       tasks: (tasks ?? []).map((t) => ({ ...t, reward_coins: Number(t.reward_coins) })),

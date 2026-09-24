@@ -15,7 +15,10 @@ export const Route = createFileRoute("/_authenticated/withdraw")({
   head: () => ({
     meta: [
       { title: "Withdraw — PixEarn" },
-      { name: "description", content: "Cash out your earning wallet to JazzCash, Easypaisa or USDT." },
+      {
+        name: "description",
+        content: "Cash out your earning wallet to JazzCash, Easypaisa or USDT.",
+      },
       { property: "og:title", content: "Withdraw — PixEarn" },
       {
         property: "og:description",
@@ -87,7 +90,10 @@ function WithdrawPage() {
           can never be withdrawn.
         </div>
 
-        <form onSubmit={onSubmit} className="space-y-4 rounded-3xl border border-border bg-white p-5">
+        <form
+          onSubmit={onSubmit}
+          className="space-y-4 rounded-3xl border border-border bg-white p-5"
+        >
           <div className="space-y-1.5">
             <Label>Choose amount</Label>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">

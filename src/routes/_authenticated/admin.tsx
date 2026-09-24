@@ -37,7 +37,15 @@ export const Route = createFileRoute("/_authenticated/admin")({
   component: AdminPage,
 });
 
-const TABS = ["Overview", "Deposits", "Withdrawals", "Proofs", "Tasks", "Users", "Settings"] as const;
+const TABS = [
+  "Overview",
+  "Deposits",
+  "Withdrawals",
+  "Proofs",
+  "Tasks",
+  "Users",
+  "Settings",
+] as const;
 
 function AdminPage() {
   const { data: me } = useMe();
@@ -205,11 +213,16 @@ function AdminPage() {
                   variant="outline"
                   className="rounded-xl"
                   onClick={() => {
-                    const value = window.prompt("Set earning wallet coins", String(u.earning_balance));
+                    const value = window.prompt(
+                      "Set earning wallet coins",
+                      String(u.earning_balance),
+                    );
                     if (value === null) return;
                     void run(
                       () =>
-                        updateUser({ data: { id: u.id, earning_balance: Math.max(0, Number(value)) } }),
+                        updateUser({
+                          data: { id: u.id, earning_balance: Math.max(0, Number(value)) },
+                        }),
                       "User updated",
                     );
                   }}
@@ -221,11 +234,16 @@ function AdminPage() {
                   variant="outline"
                   className="rounded-xl"
                   onClick={() => {
-                    const value = window.prompt("Set deposit wallet coins", String(u.deposit_balance));
+                    const value = window.prompt(
+                      "Set deposit wallet coins",
+                      String(u.deposit_balance),
+                    );
                     if (value === null) return;
                     void run(
                       () =>
-                        updateUser({ data: { id: u.id, deposit_balance: Math.max(0, Number(value)) } }),
+                        updateUser({
+                          data: { id: u.id, deposit_balance: Math.max(0, Number(value)) },
+                        }),
                       "User updated",
                     );
                   }}
@@ -359,13 +377,21 @@ function TaskEditor({
         className="space-y-3 rounded-3xl border border-border bg-white p-5"
       >
         <h2 className="font-bold">Create task</h2>
-        <Field label="Title / game name" value={form.title} onChange={(v) => setForm({ ...form, title: v })} />
+        <Field
+          label="Title / game name"
+          value={form.title}
+          onChange={(v) => setForm({ ...form, title: v })}
+        />
         <Field
           label="Description / steps"
           value={form.description}
           onChange={(v) => setForm({ ...form, description: v })}
         />
-        <Field label="Image URL" value={form.image_url} onChange={(v) => setForm({ ...form, image_url: v })} />
+        <Field
+          label="Image URL"
+          value={form.image_url}
+          onChange={(v) => setForm({ ...form, image_url: v })}
+        />
         <Field
           label="Play Store link"
           value={form.play_store_link}
@@ -467,7 +493,10 @@ function SettingsEditor({
         />
       ))}
       <p className="text-xs text-muted-foreground">
-        Postback URL: <code>/api/public/postback?userId=&#123;uid&#125;&amp;coins=&#123;amount&#125;&amp;secret=YOUR_SECRET</code>
+        Postback URL:{" "}
+        <code>
+          /api/public/postback?userId=&#123;uid&#125;&amp;coins=&#123;amount&#125;&amp;secret=YOUR_SECRET
+        </code>
       </p>
       <Button type="submit" className="rounded-xl">
         Save settings

@@ -103,7 +103,10 @@ function TaskDetailPage() {
               {submission.status === "pending" && " Admin will review it shortly."}
             </div>
           ) : (
-            <form onSubmit={onSubmit} className="space-y-4 rounded-3xl border border-border bg-white p-5">
+            <form
+              onSubmit={onSubmit}
+              className="space-y-4 rounded-3xl border border-border bg-white p-5"
+            >
               <h2 className="font-bold">Submit proof</h2>
               <div className="space-y-1.5">
                 <Label htmlFor="gameUserId">Your game / app user ID</Label>

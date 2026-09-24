@@ -55,7 +55,11 @@ const PACKAGES = [
 ];
 
 const FEATURES = [
-  { icon: Wallet, title: "Two separate wallets", text: "Deposits buy packages. Earnings withdraw." },
+  {
+    icon: Wallet,
+    title: "Two separate wallets",
+    text: "Deposits buy packages. Earnings withdraw.",
+  },
   { icon: Coins, title: "Instant offerwall coins", text: "Timewall offers credit automatically." },
   { icon: Users, title: "20% + 5% referrals", text: "Earn on packages and daily task income." },
   { icon: ShieldCheck, title: "Manual proof review", text: "Every app task verified by our team." },
@@ -85,8 +89,8 @@ function Landing() {
           Earn real coins from <span className="brand-text">simple daily tasks</span>
         </h1>
         <p className="max-w-xl text-muted-foreground">
-          Complete offers and app tasks, collect coins, and withdraw straight to JazzCash,
-          Easypaisa or USDT. 100 Coins = 1 PKR.
+          Complete offers and app tasks, collect coins, and withdraw straight to JazzCash, Easypaisa
+          or USDT. 100 Coins = 1 PKR.
         </p>
         <div className="flex gap-3">
           <Button asChild size="lg" className="h-12 rounded-2xl px-7">

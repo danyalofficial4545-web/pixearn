@@ -37,13 +37,13 @@ export async function addDepositCoins(userId: string, coins: number, note: strin
   await logTx(userId, "deposit", coins >= 0 ? "deposit_in" : "deposit_out", coins, note);
 }
 
-/** Credits the earning wallet and pays the 5% referral override on task income. */
+/** Credits the earning wallet and pays the capped task referral reward. */
 export async function addEarningCoins(
   userId: string,
   coins: number,
   type: string,
   note: string,
-  opts: { payReferral?: boolean } = {},
+  opts: { payReferral?: boolean; taskId?: string } = {},
 ) {
   const { data: profile } = await supabaseAdmin
     .from("profiles")
@@ -62,28 +62,46 @@ export async function addEarningCoins(
   await logTx(userId, "earning", type, coins, note);
 
   if (opts.payReferral && coins > 0 && profile.referred_by) {
-    const joined = new Date(profile.created_at).getTime();
-    const withinWindow = Date.now() - joined <= 30 * 24 * 60 * 60 * 1000;
-    if (withinWindow) {
-      const settings = await getSettings();
-      const pct = Number(settings["referral_level2_percent"] ?? 5);
-      const bonus = Math.floor((coins * pct) / 100);
-      if (bonus > 0) {
-        await addEarningCoins(
-          profile.referred_by,
-          bonus,
-          "referral_task",
-          `${pct}% referral bonus from downline task earning`,
-        );
-        await supabaseAdmin.from("referral_earnings").insert({
-          referrer_id: profile.referred_by,
-          from_user_id: userId,
-          kind: "task",
-          coins: bonus,
-        });
-      }
+    const { count } = await supabaseAdmin
+      .from("referral_earnings")
+      .select("id", { count: "exact", head: true })
+      .eq("referrer_id", profile.referred_by)
+      .eq("from_user_id", userId)
+      .eq("kind", "task_cap");
+    if ((count ?? 0) < 50) {
+      const bonus = 100;
+      await addEarningCoins(profile.referred_by, bonus, "referral_task", "Referral task reward");
+      await supabaseAdmin.from("referral_earnings").insert({
+        referrer_id: profile.referred_by,
+        from_user_id: userId,
+        kind: "task_cap",
+        coins: bonus,
+      });
     }
   }
+}
+
+export async function payWithdrawalReferral(userId: string, amountCoins: number) {
+  const { data: profile } = await supabaseAdmin
+    .from("profiles")
+    .select("referred_by")
+    .eq("id", userId)
+    .single();
+  if (!profile?.referred_by || amountCoins <= 0) return;
+  const bonus = Math.floor(amountCoins / 10);
+  if (bonus <= 0) return;
+  await addEarningCoins(
+    profile.referred_by,
+    bonus,
+    "referral_withdrawal",
+    "10% withdrawal commission",
+  );
+  await supabaseAdmin.from("referral_earnings").insert({
+    referrer_id: profile.referred_by,
+    from_user_id: userId,
+    kind: "withdrawal",
+    coins: bonus,
+  });
 }
 
 export async function bumpDaily(userId: string, coins: number, tasks: number) {
@@ -105,9 +123,12 @@ export async function bumpDaily(userId: string, coins: number, tasks: number) {
   }
 }
 
-export async function requireAdmin(supabase: {
-  rpc: (fn: "has_role", args: { _user_id: string; _role: "admin" }) => Promise<{ data: unknown }>;
-}, userId: string) {
+export async function requireAdmin(
+  supabase: {
+    rpc: (fn: "has_role", args: { _user_id: string; _role: "admin" }) => Promise<{ data: unknown }>;
+  },
+  userId: string,
+) {
   const { data } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
   if (!data) throw new Error("Forbidden");
 }
