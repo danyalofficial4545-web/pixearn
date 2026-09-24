@@ -19,6 +19,7 @@ import {
 } from "@/lib/admin.functions";
 import { fmtCoins, fmtDate } from "@/lib/money";
 import { cn } from "@/lib/utils";
+import { fetchWithSilentRetry } from "@/lib/query";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -62,7 +63,23 @@ function AdminPage() {
   const [tab, setTab] = useState<(typeof TABS)[number]>("Overview");
   const { data } = useQuery({
     queryKey: ["admin"],
-    queryFn: () => fetchOverview(),
+    queryFn: () =>
+      fetchWithSilentRetry(fetchOverview, {
+        users: [],
+        deposits: [],
+        withdrawals: [],
+        submissions: [],
+        tasks: [],
+        settings: {},
+        stats: {
+          users: 0,
+          approvedDepositsPkr: 0,
+          paidWithdrawPkr: 0,
+          pendingDeposits: 0,
+          pendingWithdrawals: 0,
+          pendingProofs: 0,
+        },
+      }),
     enabled: me?.isAdmin === true,
   });
 

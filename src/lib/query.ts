@@ -11,19 +11,22 @@ export function withQueryTimeout<T>(promise: Promise<T>, timeoutMs = QUERY_TIMEO
   ]);
 }
 
-export function resilientQuery<T>(queryFn: QueryFunction<T>): QueryFunction<T> {
-  return async (context) => {
+export async function fetchWithSilentRetry<T>(fetcher: () => Promise<T>, fallback: T) {
+  try {
+    return await withQueryTimeout(fetcher());
+  } catch (firstError) {
+    console.error("PixEarn: query failed, retrying silently", firstError);
+    await new Promise((resolve) => setTimeout(resolve, 3_000));
     try {
-      return await withQueryTimeout(Promise.resolve(queryFn(context)));
-    } catch (firstError) {
-      console.warn("PixEarn: query failed, retrying silently", firstError);
-      await new Promise((resolve) => setTimeout(resolve, 3_000));
-      try {
-        return await withQueryTimeout(Promise.resolve(queryFn(context)));
-      } catch (secondError) {
-        console.warn("PixEarn: retry failed, using cached empty state", secondError);
-        throw secondError;
-      }
+      return await withQueryTimeout(fetcher());
+    } catch (secondError) {
+      console.error("PixEarn: retry failed; using fallback data", secondError);
+      return fallback;
     }
-  };
+  }
+}
+
+export function resilientQuery<T>(queryFn: QueryFunction<T>): QueryFunction<T> {
+  return async (context) =>
+    fetchWithSilentRetry(() => Promise.resolve(queryFn(context)), undefined as T);
 }

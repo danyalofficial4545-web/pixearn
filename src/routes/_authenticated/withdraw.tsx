@@ -46,7 +46,7 @@ function WithdrawPage() {
   const coinsPerPkr = Number(data?.settings?.["coins_per_pkr"] ?? 100);
   const pkg = data?.activePackage;
   const options = (pkg?.withdraw_options ?? []) as number[];
-  const balance = data?.profile.earning_balance ?? 0;
+  const balance = data?.profile?.earning_balance ?? 0;
 
   const [amount, setAmount] = useState<number | null>(null);
   const [method, setMethod] = useState<(typeof METHODS)[number]["id"]>("jazzcash");

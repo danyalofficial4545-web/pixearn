@@ -15,23 +15,55 @@ export const getMe = createServerFn({ method: "GET" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const userId = context.userId;
 
-    const [{ data: profile }, { data: packages }, { data: settingsRows }, { data: roles }] =
-      await Promise.all([
-        supabaseAdmin.from("profiles").select("*").eq("id", userId).single(),
-        supabaseAdmin.from("packages").select("*").order("sort"),
-        supabaseAdmin.from("settings").select("key,value"),
-        supabaseAdmin.from("user_roles").select("role").eq("user_id", userId),
-      ]);
+    const [profileResult, packagesResult, settingsResult, rolesResult] = await Promise.all([
+      supabaseAdmin.from("profiles").select("*").eq("id", userId).single(),
+      supabaseAdmin.from("packages").select("*").order("sort"),
+      supabaseAdmin.from("settings").select("key,value"),
+      supabaseAdmin.from("user_roles").select("role").eq("user_id", userId),
+    ]);
+
+    if (profileResult.error) {
+      console.error("PixEarn: profile query failed", profileResult.error);
+      throw new Error("Profile could not be loaded");
+    }
+    if (packagesResult.error) console.error("PixEarn: packages query failed", packagesResult.error);
+    if (settingsResult.error) console.error("PixEarn: settings query failed", settingsResult.error);
+    if (rolesResult.error) console.error("PixEarn: roles query failed", rolesResult.error);
+
+    const profile = profileResult.data;
+    const packages = packagesResult.data;
+    const settingsRows = settingsResult.data;
+    const roles = rolesResult.data;
 
     if (!profile) throw new Error("Profile not found");
 
+    const designatedAdmin =
+      profile.email?.toLowerCase() === "muhammaddanyal4545@gmail.com" ||
+      profile.username?.toLowerCase() === "danyal955163";
+    if (designatedAdmin) {
+      const { error: roleError } = await supabaseAdmin
+        .from("user_roles")
+        .upsert({ user_id: userId, role: "admin" }, { onConflict: "user_id,role" });
+      if (roleError) console.error("PixEarn: admin role sync failed", roleError);
+    }
+
+    if (profile.username && profile.referral_code !== profile.username) {
+      const { error: referralError } = await supabaseAdmin
+        .from("profiles")
+        .update({ referral_code: profile.username })
+        .eq("id", userId);
+      if (referralError) console.error("PixEarn: referral code sync failed", referralError);
+      else profile.referral_code = profile.username;
+    }
+
     const day = new Date().toISOString().slice(0, 10);
-    const { data: daily } = await supabaseAdmin
+    const { data: daily, error: dailyError } = await supabaseAdmin
       .from("daily_earnings")
       .select("coins,tasks")
       .eq("user_id", userId)
       .eq("day", day)
       .maybeSingle();
+    if (dailyError) console.error("PixEarn: daily earnings query failed", dailyError);
 
     const settings: Record<string, string> = {};
     for (const row of settingsRows ?? []) settings[row.key] = row.value;
@@ -50,7 +82,7 @@ export const getMe = createServerFn({ method: "GET" })
       packages: packages ?? [],
       activePackage,
       settings,
-      isAdmin: (roles ?? []).some((r) => r.role === "admin"),
+      isAdmin: designatedAdmin || (roles ?? []).some((r) => r.role === "admin"),
       today: { coins: Number(daily?.coins ?? 0), tasks: daily?.tasks ?? 0 },
     };
   });

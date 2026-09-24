@@ -49,8 +49,24 @@ function ReferralPage() {
 
   async function copyLink() {
     if (!link) return;
-    await navigator.clipboard.writeText(link);
-    toast.success("Link copied!");
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(link);
+      } else {
+        const input = document.createElement("textarea");
+        input.value = link;
+        input.style.position = "fixed";
+        input.style.opacity = "0";
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand("copy");
+        input.remove();
+      }
+      toast.success("Copied!");
+    } catch (error) {
+      console.error("PixEarn: clipboard copy failed", error);
+      toast.error("Select the link and copy it manually");
+    }
   }
 
   return (

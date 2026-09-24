@@ -8,7 +8,7 @@ import { useMe } from "@/hooks/useMe";
 import { getTasks } from "@/lib/app.functions";
 import { fmtCoins, fmtPkr } from "@/lib/money";
 import { cn } from "@/lib/utils";
-import { withQueryTimeout } from "@/lib/query";
+import { fetchWithSilentRetry } from "@/lib/query";
 
 export const Route = createFileRoute("/_authenticated/tasks")({
   head: () => ({
@@ -30,7 +30,7 @@ function TasksPage() {
   const { data } = useQuery({
     queryKey: ["tasks"],
     retry: false,
-    queryFn: () => withQueryTimeout(fetchTasks()),
+    queryFn: () => fetchWithSilentRetry(fetchTasks, { tasks: [], submissions: [] }),
   });
 
   const coinsPerPkr = Number(me?.settings?.["coins_per_pkr"] ?? 100);

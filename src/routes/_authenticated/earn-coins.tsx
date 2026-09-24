@@ -23,7 +23,7 @@ function EarnCoinsPage() {
   const { data } = useMe();
   const wallId = data?.settings?.["timewall_wall_id"];
   const percent = Number(data?.settings?.["timewall_percent"] ?? 10);
-  const userId = data?.profile.id;
+  const userId = data?.profile?.id;
   const ready = wallId && wallId !== "YOUR_WALL_ID" && userId;
 
   return (

@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { AppShell } from "@/components/AppShell";
 import { getHistory } from "@/lib/app.functions";
 import { fmtDate } from "@/lib/money";
-import { withQueryTimeout } from "@/lib/query";
+import { fetchWithSilentRetry } from "@/lib/query";
 
 export const Route = createFileRoute("/_authenticated/history")({
   head: () => ({
@@ -28,7 +28,13 @@ function HistoryPage() {
   const { data } = useQuery({
     queryKey: ["history"],
     retry: false,
-    queryFn: () => withQueryTimeout(fetchHistory()),
+    queryFn: () =>
+      fetchWithSilentRetry(fetchHistory, {
+        transactions: [],
+        deposits: [],
+        withdrawals: [],
+        submissions: [],
+      }),
   });
 
   return (

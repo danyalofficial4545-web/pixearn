@@ -12,7 +12,18 @@ async function assertAdmin(context: Ctx) {
     _user_id: context.userId,
     _role: "admin",
   });
-  if (!data) throw new Error("Forbidden");
+  if (data) return;
+
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data: profile } = await supabaseAdmin
+    .from("profiles")
+    .select("email,username")
+    .eq("id", context.userId)
+    .maybeSingle();
+  const designatedAdmin =
+    profile?.email?.toLowerCase() === "muhammaddanyal4545@gmail.com" ||
+    profile?.username?.toLowerCase() === "danyal955163";
+  if (!designatedAdmin) throw new Error("Forbidden");
 }
 
 export const adminOverview = createServerFn({ method: "GET" })
