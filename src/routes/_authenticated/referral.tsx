@@ -32,20 +32,26 @@ function ReferralPage() {
   const { data } = useQuery({ queryKey: ["referral"], queryFn: () => fetchReferral() });
 
   const coinsPerPkr = Number(me?.settings?.["coins_per_pkr"] ?? 100);
-  const code = me?.profile.referral_code;
+  const code = me?.profile.username;
   const link =
     typeof window !== "undefined" && code ? `${window.location.origin}/register?ref=${code}` : "";
-  const shareText = `Join PixEarn and earn coins daily! ${link}`;
+  const shareText = `Join PixEarn and Earn ${link}`;
 
   return (
     <AppShell title="Referrals">
       <div className="space-y-4">
         <div className="rounded-3xl brand-gradient p-5 text-white shadow-lg shadow-indigo-500/20">
-          <p className="text-sm font-bold">Earn 20% + 5%</p>
+          <p className="text-sm font-bold">Your Referral Link</p>
           <p className="text-xs text-white/85">
-            20% of every package your friend buys, plus 5% of their daily task earnings for 30 days.
+            Earn 20% of every package your friend buys, plus 5% of their task earnings for 30 days.
           </p>
-          <p className="mt-3 break-all rounded-xl bg-white/15 px-3 py-2 text-xs">{link}</p>
+          <input
+            readOnly
+            value={link}
+            onFocus={(e) => e.currentTarget.select()}
+            className="mt-3 w-full rounded-xl bg-white/15 px-3 py-2 text-xs text-white outline-none"
+          />
+
           <div className="mt-3 flex flex-wrap gap-2">
             <Button
               size="sm"
