@@ -14,6 +14,7 @@ export const getMe = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const userId = context.userId;
+    const { data: authData } = await context.supabase.auth.getUser();
 
     const [profileResult, packagesResult, settingsResult, rolesResult] = await Promise.all([
       supabaseAdmin.from("profiles").select("*").eq("id", userId).single(),
@@ -22,15 +23,29 @@ export const getMe = createServerFn({ method: "GET" })
       supabaseAdmin.from("user_roles").select("role").eq("user_id", userId),
     ]);
 
-    if (profileResult.error) {
-      console.error("PixEarn: profile query failed", profileResult.error);
-      throw new Error("Profile could not be loaded");
+    let profile = profileResult.data;
+    if (profileResult.error || !profile) {
+      const email = authData.user?.email?.trim().toLowerCase() ?? "";
+      const metadataUsername =
+        typeof authData.user?.user_metadata?.["username"] === "string"
+          ? authData.user.user_metadata["username"].trim().toLowerCase()
+          : "";
+      const username = metadataUsername || email.split("@")[0] || `user_${userId.slice(0, 8)}`;
+      const { data: recovered, error: recoveryError } = await supabaseAdmin
+        .from("profiles")
+        .upsert({ id: userId, email, username, referral_code: username }, { onConflict: "id" })
+        .select("*")
+        .single();
+      if (recoveryError || !recovered) {
+        console.error("PixEarn: profile query failed", profileResult.error, recoveryError);
+        throw new Error("Profile could not be loaded");
+      }
+      profile = recovered;
     }
     if (packagesResult.error) console.error("PixEarn: packages query failed", packagesResult.error);
     if (settingsResult.error) console.error("PixEarn: settings query failed", settingsResult.error);
     if (rolesResult.error) console.error("PixEarn: roles query failed", rolesResult.error);
 
-    const profile = profileResult.data;
     const packages = packagesResult.data;
     const settingsRows = settingsResult.data;
     const roles = rolesResult.data;

@@ -1,9 +1,15 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { Coins, ShieldCheck, Smartphone, Users, Wallet } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { PixEarnLogo } from "@/components/PixEarnLogo";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
+  ssr: false,
+  beforeLoad: async () => {
+    const { data } = await supabase.auth.getUser();
+    throw redirect({ to: data.user ? "/dashboard" : "/login" });
+  },
   head: () => ({
     meta: [
       { title: "PixEarn — Earn coins from simple daily tasks" },

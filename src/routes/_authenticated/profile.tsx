@@ -38,9 +38,9 @@ function ProfilePage() {
   const { data } = useMe();
   const p = data?.profile;
   const coinsPerPkr = Number(data?.settings?.["coins_per_pkr"] ?? 100);
-  const username = p?.username ?? "your-username";
+  const username = p?.username?.trim() ?? "";
   const link =
-    typeof window !== "undefined"
+    typeof window !== "undefined" && username
       ? `${window.location.origin}/register?ref=${encodeURIComponent(username)}`
       : "";
   const isAdmin =
@@ -83,7 +83,9 @@ function ProfilePage() {
         <div className="flex items-start gap-4 rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
           <PixEarnLogo size={64} animated showRing={false} />
           <div className="min-w-0 flex-1">
-            <p className="truncate text-lg font-black">@{p?.username ?? "Loading profile"}</p>
+            <p className="truncate text-lg font-black">
+              {p?.username ? `@${p.username}` : "Profile unavailable"}
+            </p>
             <p className="truncate text-sm text-muted-foreground">
               {p?.email ?? "Account details are loading"}
             </p>
@@ -127,7 +129,7 @@ function ProfilePage() {
           <Stat
             icon={Users}
             label="Referral code"
-            value={p?.username ?? "Not set"}
+            value={p?.username || "—"}
             className="from-violet-100 to-purple-50 text-violet-800"
           />
         </div>
