@@ -348,6 +348,38 @@ export type Database = {
         }
         Relationships: []
       }
+      timewall_postbacks: {
+        Row: {
+          created_at: string
+          credited_coins: number
+          raw_coins: number
+          transaction_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          credited_coins?: number
+          raw_coins?: number
+          transaction_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          credited_coins?: number
+          raw_coins?: number
+          transaction_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "timewall_postbacks_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       transactions: {
         Row: {
           coins: number
