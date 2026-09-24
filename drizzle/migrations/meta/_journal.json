@@ -36,6 +36,20 @@
       "when": 1790123641913,
       "tag": "0004_super_admin_auto_role",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1790249238346,
+      "tag": "0005_referral_by_username",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1790249251455,
+      "tag": "0006_timewall_postbacks",
+      "breakpoints": true
     }
   ]
 }
