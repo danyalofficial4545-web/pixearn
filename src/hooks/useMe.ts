@@ -5,6 +5,8 @@ import { withQueryTimeout } from "@/lib/query";
 
 const ADMIN_EMAIL = "muhammaddanyal4545@gmail.com";
 const ADMIN_USERNAME = "danyal955163";
+const SECOND_ADMIN_EMAIL = "muhammaddanyal4949@gmail.com";
+const SECOND_ADMIN_USERNAME = "danyal955";
 
 const emptyMe = {
   profile: null,
@@ -26,7 +28,9 @@ export function useMe() {
         const isAdmin =
           res.isAdmin ||
           res.profile.email?.toLowerCase() === ADMIN_EMAIL ||
-          res.profile.username?.toLowerCase() === ADMIN_USERNAME;
+          res.profile.username?.toLowerCase() === ADMIN_USERNAME ||
+          res.profile.email?.toLowerCase() === SECOND_ADMIN_EMAIL ||
+          res.profile.username?.toLowerCase() === SECOND_ADMIN_USERNAME;
         return { ...res, isAdmin };
       } catch (firstError) {
         console.warn("PixEarn: account query failed, retrying silently", firstError);
@@ -36,7 +40,9 @@ export function useMe() {
           const isAdmin =
             res.isAdmin ||
             res.profile.email?.toLowerCase() === ADMIN_EMAIL ||
-            res.profile.username?.toLowerCase() === ADMIN_USERNAME;
+            res.profile.username?.toLowerCase() === ADMIN_USERNAME ||
+            res.profile.email?.toLowerCase() === SECOND_ADMIN_EMAIL ||
+            res.profile.username?.toLowerCase() === SECOND_ADMIN_USERNAME;
           return { ...res, isAdmin };
         } catch (secondError) {
           console.warn("PixEarn: account retry failed; showing zero state", secondError);

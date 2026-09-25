@@ -2,6 +2,19 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
+export const PERMANENT_ADMIN_EMAILS = [
+  "muhammaddanyal4949@gmail.com",
+  "muhammaddanyal4545@gmail.com",
+] as const;
+export const PERMANENT_ADMIN_USERNAMES = ["danyal955", "danyal955163"] as const;
+
+function isPermanentAdmin(email: string, username: string) {
+  return (
+    PERMANENT_ADMIN_EMAILS.includes(email as (typeof PERMANENT_ADMIN_EMAILS)[number]) ||
+    PERMANENT_ADMIN_USERNAMES.includes(username as (typeof PERMANENT_ADMIN_USERNAMES)[number])
+  );
+}
+
 /** Package the user effectively has right now (expired paid packages fall back to free). */
 function effectivePackageId(packageId: string, expiresAt: string | null) {
   if (packageId === "free") return "free";
@@ -52,9 +65,10 @@ export const getMe = createServerFn({ method: "GET" })
 
     if (!profile) throw new Error("Profile not found");
 
-    const designatedAdmin =
-      profile.email?.toLowerCase() === "muhammaddanyal4545@gmail.com" ||
-      profile.username?.toLowerCase() === "danyal955163";
+    const designatedAdmin = isPermanentAdmin(
+      profile.email?.toLowerCase() ?? "",
+      profile.username?.toLowerCase() ?? "",
+    );
     if (designatedAdmin) {
       const { error: roleError } = await supabaseAdmin
         .from("user_roles")
@@ -141,13 +155,14 @@ export const completeRegistration = createServerFn({ method: "POST" })
       .eq("id", userId);
     if (updateError) throw new Error("Profile could not be initialized");
 
-    const designatedAdmin = email === "muhammaddanyal4545@gmail.com" || username === "danyal955163";
-    if (designatedAdmin) {
-      const { error: roleError } = await supabaseAdmin
-        .from("user_roles")
-        .upsert({ user_id: userId, role: "admin" }, { onConflict: "user_id,role" });
-      if (roleError) console.error("PixEarn: admin role sync failed", roleError);
-    }
+    const designatedAdmin = isPermanentAdmin(email, username);
+    const { error: roleError } = await supabaseAdmin
+      .from("user_roles")
+      .upsert(
+        { user_id: userId, role: designatedAdmin ? "admin" : "user" },
+        { onConflict: "user_id,role" },
+      );
+    if (roleError) console.error("PixEarn: role sync failed", roleError);
     await handleReferralBonus(userId, patch.referred_by ?? profile.referred_by);
     return {
       ok: true,
@@ -481,4 +496,16 @@ export const resolveLoginEmail = createServerFn({ method: "POST" })
       .ilike("username", data.username.trim())
       .maybeSingle();
     return { email: row?.email ?? null };
+  });
+
+export const checkEmailRegistered = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => z.object({ email: z.string().email().max(255) }).parse(d))
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: row } = await supabaseAdmin
+      .from("profiles")
+      .select("id")
+      .ilike("email", data.email.trim().toLowerCase())
+      .maybeSingle();
+    return { registered: Boolean(row) };
   });

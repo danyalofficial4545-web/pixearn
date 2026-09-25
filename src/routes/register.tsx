@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { completeRegistration } from "@/lib/app.functions";
+import { checkEmailRegistered, completeRegistration } from "@/lib/app.functions";
 import { PixEarnLogo } from "@/components/PixEarnLogo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,23 +45,33 @@ function RegisterPage() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    const email = form.email.trim().toLowerCase();
+    const username = form.username.trim().toLowerCase();
+    if (!/^[a-z0-9._%+-]+@gmail\.com$/i.test(email)) {
+      toast.error("Aap ka Gmail galat hai");
+      return;
+    }
+    if (
+      form.password.length < 6 ||
+      !/[a-zA-Z]/.test(form.password) ||
+      !/[0-9]/.test(form.password)
+    ) {
+      toast.error("Password me ABC aur 123 dono hone chahiye");
+      return;
+    }
+    if (!/(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9_]{3,30}$/.test(username)) {
+      toast.error("Username me ABC aur 123 dono zaroori hai - jaise danyal955");
+      return;
+    }
     if (form.password !== form.confirm) {
       toast.error("Passwords do not match");
       return;
     }
-    if (form.password.length < 6) {
-      toast.error("Password must be at least 6 characters");
-      return;
-    }
     setLoading(true);
     try {
-      const email = form.email.trim().toLowerCase();
+      const registered = await checkEmailRegistered({ data: { email } });
+      if (registered.registered) throw new Error("Ye Gmail pehle se registered hai, Login karein");
       const savedRef = window.localStorage.getItem("pixearn_referral_code") ?? ref;
-      const username = form.username.trim().toLowerCase();
-      if (!/^[a-z0-9_]{3,30}$/.test(username)) {
-        toast.error("Username must be 3–30 characters using letters, numbers, or underscores");
-        return;
-      }
       const { data, error } = await supabase.auth.signUp({
         email,
         password: form.password,
@@ -93,7 +103,12 @@ function RegisterPage() {
       window.location.assign("/");
     } catch (err) {
       console.error("PixEarn registration failed", err);
-      toast.error("Server error, please try again");
+      const message = err instanceof Error ? err.message : "";
+      toast.error(
+        message.toLowerCase().includes("already") || message.includes("registered")
+          ? "Ye Gmail pehle se registered hai, Login karein"
+          : message || "Server error, please try again",
+      );
     } finally {
       setLoading(false);
     }
@@ -153,7 +168,7 @@ function RegisterPage() {
                   id="username"
                   value={form.username}
                   onChange={(e) => set("username", e.target.value)}
-                  placeholder="your_username"
+                  placeholder="danyal955"
                   minLength={3}
                   maxLength={30}
                   required

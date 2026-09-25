@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { resolveLoginEmail } from "@/lib/app.functions";
+import { checkEmailRegistered, resolveLoginEmail } from "@/lib/app.functions";
 import { PixEarnLogo } from "@/components/PixEarnLogo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,11 +40,20 @@ function LoginPage() {
       let email = identifier.trim();
       if (!email.includes("@")) {
         const res = await resolveLoginEmail({ data: { username: email } });
-        if (!res.email) throw new Error("No account found with that username.");
+        if (!res.email) throw new Error("Ye Gmail register nahi hai, pehle Signup karein");
         email = res.email;
+      } else {
+        email = email.toLowerCase();
+        if (!/^[a-z0-9._%+-]+@gmail\.com$/i.test(email)) {
+          throw new Error("Aap ka Gmail galat hai");
+        }
+        const registered = await checkEmailRegistered({ data: { email } });
+        if (!registered.registered) {
+          throw new Error("Ye Gmail register nahi hai, pehle Signup karein");
+        }
       }
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) throw error;
+      if (error) throw new Error("Aap ka password galat hai");
       if (!data.session || !data.user) throw new Error("Login session could not be created.");
       toast.success("Welcome back!");
       window.location.assign("/dashboard");

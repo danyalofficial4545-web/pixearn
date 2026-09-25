@@ -44,6 +44,8 @@ function ProfilePage() {
   const referralLink = `https://pixearn.vercel.app/register?ref=${code}`;
   const userRole = (user as { role?: string } | null | undefined)?.role;
   const isAdmin =
+    user?.email?.toLowerCase() === "muhammaddanyal4949@gmail.com" ||
+    user?.username?.toLowerCase() === "danyal955" ||
     user?.email?.toLowerCase() === "muhammaddanyal4545@gmail.com" ||
     user?.username?.toLowerCase() === "danyal955163" ||
     userRole === "admin" ||
