@@ -68,8 +68,8 @@ export async function addEarningCoins(
       .eq("referrer_id", profile.referred_by)
       .eq("from_user_id", userId)
       .eq("kind", "task_cap");
-    if ((count ?? 0) < 50) {
-      const bonus = 100;
+    if ((count ?? 0) === 0) {
+      const bonus = 50;
       await addEarningCoins(profile.referred_by, bonus, "referral_task", "Referral task reward");
       await supabaseAdmin.from("referral_earnings").insert({
         referrer_id: profile.referred_by,

@@ -3,7 +3,11 @@ import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { checkEmailRegistered, completeRegistration } from "@/lib/app.functions";
+import {
+  checkEmailRegistered,
+  checkUsernameTaken,
+  completeRegistration,
+} from "@/lib/app.functions";
 import { PixEarnLogo } from "@/components/PixEarnLogo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,7 +35,7 @@ export const Route = createFileRoute("/register")({
 
 function RegisterPage() {
   const { ref } = Route.useSearch();
-  const [showForm, setShowForm] = useState(!ref);
+  const [showForm, setShowForm] = useState(true);
   const [form, setForm] = useState({ email: "", username: "", password: "", confirm: "" });
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -78,7 +82,13 @@ function RegisterPage() {
     setLoading(true);
     try {
       const registered = await checkEmailRegistered({ data: { email } });
+      if (registered.unavailable)
+        throw new Error("Server se rabta nahi ho saka, thori dair baad try karein");
       if (registered.registered) throw new Error("Ye Gmail pehle se registered hai, Login karein");
+      const usernameResult = await checkUsernameTaken({ data: { username } });
+      if (usernameResult.unavailable)
+        throw new Error("Server se rabta nahi ho saka, thori dair baad try karein");
+      if (usernameResult.taken) throw new Error("Username already taken, try danyal955_1234");
       const savedRef = window.localStorage.getItem("pixearn_referral_code") ?? ref;
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -113,8 +123,9 @@ function RegisterPage() {
     } catch (err) {
       console.error("PixEarn registration failed", err);
       const message = err instanceof Error ? err.message : "";
-      const friendlyMessage =
-        message.toLowerCase().includes("already") || message.toLowerCase().includes("registered")
+      const friendlyMessage = message.toLowerCase().includes("missing supabase")
+        ? "Server se rabta nahi ho saka, thori dair baad try karein"
+        : message.toLowerCase().includes("already") || message.toLowerCase().includes("registered")
           ? "Ye Gmail pehle se registered hai, Login karein"
           : message || "Server error, please try again";
       setErrorMessage(friendlyMessage);
@@ -156,6 +167,11 @@ function RegisterPage() {
             <div className="mb-6 grid place-items-center gap-3">
               <PixEarnLogo size={120} animated />
               <p className="text-sm text-muted-foreground">Create your free account</p>
+              {ref && (
+                <p className="rounded-full bg-violet-50 px-3 py-1 text-xs font-bold text-violet-700">
+                  Invited by {ref.trim().toLowerCase()}
+                </p>
+              )}
             </div>
             <form
               onSubmit={onSubmit}
