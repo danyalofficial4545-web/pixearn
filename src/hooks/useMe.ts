@@ -12,14 +12,16 @@ const emptyMe = {
   profile: null,
   packages: [],
   activePackage: null,
-  settings: {},
+  settings: {} as Record<string, string>,
   isAdmin: false,
   today: { coins: 0, tasks: 0 },
 };
 
+type Me = Omit<Awaited<ReturnType<typeof getMe>>, "settings"> & { settings: Record<string, string> };
+
 export function useMe() {
   const fetchMe = useServerFn(getMe);
-  const q = useQuery({
+  const q = useQuery<Me>({
     queryKey: ["me"],
     retry: false,
     queryFn: async () => {
@@ -46,7 +48,7 @@ export function useMe() {
           return { ...res, isAdmin };
         } catch (secondError) {
           console.warn("PixEarn: account retry failed; showing zero state", secondError);
-          return emptyMe;
+          return emptyMe as unknown as Me;
         }
       }
     },
