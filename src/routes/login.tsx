@@ -40,7 +40,7 @@ function LoginPage() {
       let email = identifier.trim();
       if (!email.includes("@")) {
         const res = await resolveLoginEmail({ data: { username: email } });
-        if (!res.email) throw new Error("Ye Gmail register nahi hai, pehle Signup karein");
+        if (!res.email) throw new Error("Ye username register nahi hai, pehle Signup karein");
         email = res.email;
       } else {
         email = email.toLowerCase();

@@ -31,7 +31,7 @@ export const Route = createFileRoute("/register")({
 
 function RegisterPage() {
   const { ref } = Route.useSearch();
-  const [showForm, setShowForm] = useState(!ref);
+  const [showForm, setShowForm] = useState(true);
   const [form, setForm] = useState({ email: "", username: "", password: "", confirm: "" });
   const [loading, setLoading] = useState(false);
 
@@ -107,7 +107,9 @@ function RegisterPage() {
       toast.error(
         message.toLowerCase().includes("already") || message.includes("registered")
           ? "Ye Gmail pehle se registered hai, Login karein"
-          : message || "Server error, please try again",
+          : message.toLowerCase().includes("weak") || message.toLowerCase().includes("guess")
+            ? "Ye password bohat aasan hai, koi mushkil password rakhein (jaise Pix2026ab)"
+            : message || "Server error, please try again",
       );
     } finally {
       setLoading(false);
