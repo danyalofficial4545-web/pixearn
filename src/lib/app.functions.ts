@@ -509,3 +509,15 @@ export const checkEmailRegistered = createServerFn({ method: "POST" })
       .maybeSingle();
     return { registered: Boolean(row) };
   });
+
+export const checkUsernameTaken = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => z.object({ username: z.string().min(1).max(60) }).parse(d))
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: row } = await supabaseAdmin
+      .from("profiles")
+      .select("id")
+      .ilike("username", data.username.trim())
+      .maybeSingle();
+    return { taken: Boolean(row) };
+  });

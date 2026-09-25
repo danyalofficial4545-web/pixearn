@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { checkEmailRegistered, completeRegistration } from "@/lib/app.functions";
+import { checkEmailRegistered, checkUsernameTaken, completeRegistration } from "@/lib/app.functions";
 import { PixEarnLogo } from "@/components/PixEarnLogo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,6 +34,12 @@ function RegisterPage() {
   const [showForm, setShowForm] = useState(true);
   const [form, setForm] = useState({ email: "", username: "", password: "", confirm: "" });
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [success, setSuccess] = useState(false);
+  function fail(m: string) {
+    setErrorMsg(m);
+    toast.error(m);
+  }
 
   useEffect(() => {
     if (ref) window.localStorage.setItem("pixearn_referral_code", ref.trim().toLowerCase());
@@ -45,10 +51,11 @@ function RegisterPage() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setErrorMsg("");
     const email = form.email.trim().toLowerCase();
     const username = form.username.trim().toLowerCase();
     if (!/^[a-z0-9._%+-]+@gmail\.com$/i.test(email)) {
-      toast.error("Aap ka Gmail galat hai");
+      fail("Aap ka Gmail galat hai");
       return;
     }
     if (
@@ -56,21 +63,24 @@ function RegisterPage() {
       !/[a-zA-Z]/.test(form.password) ||
       !/[0-9]/.test(form.password)
     ) {
-      toast.error("Password me ABC aur 123 dono hone chahiye");
+      fail("Password me ABC aur 123 dono hone chahiye");
       return;
     }
     if (!/(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9_]{3,30}$/.test(username)) {
-      toast.error("Username me ABC aur 123 dono zaroori hai - jaise danyal955");
+      fail("Username me ABC aur 123 dono zaroori hai - jaise danyal955");
       return;
     }
     if (form.password !== form.confirm) {
-      toast.error("Passwords do not match");
+      fail("Passwords do not match");
       return;
     }
     setLoading(true);
     try {
       const registered = await checkEmailRegistered({ data: { email } });
       if (registered.registered) throw new Error("Ye Gmail pehle se registered hai, Login karein");
+      const uTaken = await checkUsernameTaken({ data: { username } });
+      if (uTaken.taken)
+        throw new Error(`Ye username pehle se liya ja chuka hai, koi aur try karein (jaise ${username}${Math.floor(10 + Math.random() * 90)})`);
       const savedRef = window.localStorage.getItem("pixearn_referral_code") ?? ref;
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -99,13 +109,14 @@ function RegisterPage() {
         data: { referralUsername: savedRef?.trim().toLowerCase() || undefined },
       });
       window.localStorage.removeItem("pixearn_referral_code");
+      setSuccess(true);
       toast.success("Account Created Successfully");
-      window.location.assign("/");
+      window.location.assign("/dashboard");
     } catch (err) {
       console.error("PixEarn registration failed", err);
       const message = err instanceof Error ? err.message : "";
-      toast.error(
-        message.toLowerCase().includes("already") || message.includes("registered")
+      fail(
+        message.toLowerCase().includes("already") || message.includes("Gmail pehle")
           ? "Ye Gmail pehle se registered hai, Login karein"
           : message.toLowerCase().includes("weak") || message.toLowerCase().includes("guess")
             ? "Ye password bohat aasan hai, koi mushkil password rakhein (jaise Pix2026ab)"
@@ -210,6 +221,14 @@ function RegisterPage() {
                   "Register"
                 )}
               </Button>
+              {errorMsg && (
+                <p role="alert" className="rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-center text-sm text-destructive">
+                  {errorMsg}
+                </p>
+              )}
+              {success && (
+                <p className="text-center text-sm text-primary">Account ban gaya, dashboard khul raha hai…</p>
+              )}
               <p className="text-center text-xs text-muted-foreground">
                 Already have an account?{" "}
                 <Link to="/login" className="text-primary hover:underline">
