@@ -12,7 +12,7 @@ const emptyMe = {
   profile: null,
   packages: [],
   activePackage: null,
-  settings: {},
+  settings: {} as Record<string, string>,
   isAdmin: false,
   today: { coins: 0, tasks: 0 },
 };
