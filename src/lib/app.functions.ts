@@ -489,23 +489,50 @@ export const getProofUrl = createServerFn({ method: "POST" })
 export const resolveLoginEmail = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => z.object({ username: z.string().min(1).max(60) }).parse(d))
   .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: row } = await supabaseAdmin
-      .from("profiles")
-      .select("email")
-      .ilike("username", data.username.trim())
-      .maybeSingle();
-    return { email: row?.email ?? null };
+    try {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data: row } = await supabaseAdmin
+        .from("profiles")
+        .select("email")
+        .ilike("username", data.username.trim())
+        .maybeSingle();
+      return { email: row?.email ?? null, unavailable: false };
+    } catch (err) {
+      console.error("PixEarn: resolveLoginEmail failed", err);
+      return { email: null as string | null, unavailable: true };
+    }
   });
 
 export const checkEmailRegistered = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => z.object({ email: z.string().email().max(255) }).parse(d))
   .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: row } = await supabaseAdmin
-      .from("profiles")
-      .select("id")
-      .ilike("email", data.email.trim().toLowerCase())
-      .maybeSingle();
-    return { registered: Boolean(row) };
+    try {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data: row } = await supabaseAdmin
+        .from("profiles")
+        .select("id")
+        .ilike("email", data.email.trim().toLowerCase())
+        .maybeSingle();
+      return { registered: Boolean(row), unavailable: false };
+    } catch (err) {
+      console.error("PixEarn: checkEmailRegistered failed", err);
+      return { registered: false, unavailable: true };
+    }
+  });
+
+export const checkUsernameTaken = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => z.object({ username: z.string().min(1).max(60) }).parse(d))
+  .handler(async ({ data }) => {
+    try {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data: row } = await supabaseAdmin
+        .from("profiles")
+        .select("id")
+        .ilike("username", data.username.trim())
+        .maybeSingle();
+      return { taken: Boolean(row), unavailable: false };
+    } catch (err) {
+      console.error("PixEarn: checkUsernameTaken failed", err);
+      return { taken: false, unavailable: true };
+    }
   });

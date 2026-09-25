@@ -40,7 +40,8 @@ function LoginPage() {
       let email = identifier.trim();
       if (!email.includes("@")) {
         const res = await resolveLoginEmail({ data: { username: email } });
-        if (!res.email) throw new Error("Ye Gmail register nahi hai, pehle Signup karein");
+        if (!res.email && res.unavailable) throw new Error("Server se rabta nahi ho saka, thori dair baad try karein");
+        if (!res.email) throw new Error("Ye username register nahi hai, pehle Signup karein");
         email = res.email;
       } else {
         email = email.toLowerCase();
@@ -48,7 +49,7 @@ function LoginPage() {
           throw new Error("Aap ka Gmail galat hai");
         }
         const registered = await checkEmailRegistered({ data: { email } });
-        if (!registered.registered) {
+        if (!registered.registered && !registered.unavailable) {
           throw new Error("Ye Gmail register nahi hai, pehle Signup karein");
         }
       }
