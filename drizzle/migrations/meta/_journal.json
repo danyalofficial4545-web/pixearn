@@ -50,6 +50,13 @@
       "when": 1790249251455,
       "tag": "0006_timewall_postbacks",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1790313282532,
+      "tag": "0007_second_admin_and_username_referral",
+      "breakpoints": true
     }
   ]
 }
