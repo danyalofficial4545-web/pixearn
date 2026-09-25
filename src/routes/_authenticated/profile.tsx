@@ -46,6 +46,7 @@ function ProfilePage() {
   const isAdmin =
     user?.email?.toLowerCase() === "muhammaddanyal4949@gmail.com" ||
     user?.username?.toLowerCase() === "danyal955" ||
+    user?.email?.toLowerCase() === "muhammaddanyal4990@gmail.com" ||
     user?.email?.toLowerCase() === "muhammaddanyal4545@gmail.com" ||
     user?.username?.toLowerCase() === "danyal955163" ||
     userRole === "admin" ||

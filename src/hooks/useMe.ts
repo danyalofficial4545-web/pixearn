@@ -3,11 +3,12 @@ import { useServerFn } from "@tanstack/react-start";
 import { getMe } from "@/lib/app.functions";
 import { withQueryTimeout } from "@/lib/query";
 
-const ADMIN_EMAIL = "muhammaddanyal4545@gmail.com";
-const ADMIN_USERNAME = "danyal955163";
-const SECOND_ADMIN_EMAIL = "muhammaddanyal4949@gmail.com";
-const SECOND_ADMIN_USERNAME = "danyal955";
-const THIRD_ADMIN_EMAIL = "muhammaddanyal4990@gmail.com";
+const ADMIN_EMAILS = [
+  "muhammaddanyal4545@gmail.com",
+  "muhammaddanyal4949@gmail.com",
+  "muhammaddanyal4990@gmail.com",
+];
+const ADMIN_USERNAMES = ["danyal955163", "danyal955"];
 
 const emptyMe = {
   profile: null,
@@ -18,7 +19,17 @@ const emptyMe = {
   today: { coins: 0, tasks: 0 },
 };
 
-type Me = Omit<Awaited<ReturnType<typeof getMe>>, "settings"> & { settings: Record<string, string> };
+type Me = Omit<Awaited<ReturnType<typeof getMe>>, "settings"> & {
+  settings: Record<string, string>;
+};
+
+function isPermanentAdmin(profile: { email?: string | null; username?: string | null } | null) {
+  const email = profile?.email?.trim().toLowerCase();
+  const username = profile?.username?.trim().toLowerCase();
+  return Boolean(
+    (email && ADMIN_EMAILS.includes(email)) || (username && ADMIN_USERNAMES.includes(username)),
+  );
+}
 
 export function useMe() {
   const fetchMe = useServerFn(getMe);
@@ -28,27 +39,13 @@ export function useMe() {
     queryFn: async () => {
       try {
         const res = await withQueryTimeout(fetchMe());
-        const isAdmin =
-          res.isAdmin ||
-          res.profile.email?.toLowerCase() === ADMIN_EMAIL ||
-          res.profile.username?.toLowerCase() === ADMIN_USERNAME ||
-          res.profile.email?.toLowerCase() === SECOND_ADMIN_EMAIL ||
-            res.profile.email?.toLowerCase() === THIRD_ADMIN_EMAIL ||
-          res.profile.username?.toLowerCase() === SECOND_ADMIN_USERNAME;
-        return { ...res, isAdmin };
+        return { ...res, isAdmin: res.isAdmin === true || isPermanentAdmin(res.profile) };
       } catch (firstError) {
         console.warn("PixEarn: account query failed, retrying silently", firstError);
         await new Promise((resolve) => setTimeout(resolve, 3_000));
         try {
           const res = await withQueryTimeout(fetchMe());
-          const isAdmin =
-            res.isAdmin ||
-            res.profile.email?.toLowerCase() === ADMIN_EMAIL ||
-            res.profile.username?.toLowerCase() === ADMIN_USERNAME ||
-            res.profile.email?.toLowerCase() === SECOND_ADMIN_EMAIL ||
-            res.profile.email?.toLowerCase() === THIRD_ADMIN_EMAIL ||
-            res.profile.username?.toLowerCase() === SECOND_ADMIN_USERNAME;
-          return { ...res, isAdmin };
+          return { ...res, isAdmin: res.isAdmin === true || isPermanentAdmin(res.profile) };
         } catch (secondError) {
           console.warn("PixEarn: account retry failed; showing zero state", secondError);
           return emptyMe as unknown as Me;

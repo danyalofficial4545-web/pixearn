@@ -32,15 +32,18 @@ function LoginPage() {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setErrorMessage("");
     setLoading(true);
     try {
       let email = identifier.trim();
       if (!email.includes("@")) {
         const res = await resolveLoginEmail({ data: { username: email } });
-        if (!res.email && res.unavailable) throw new Error("Server se rabta nahi ho saka, thori dair baad try karein");
+        if (!res.email && res.unavailable)
+          throw new Error("Server se rabta nahi ho saka, thori dair baad try karein");
         if (!res.email) throw new Error("Ye username register nahi hai, pehle Signup karein");
         email = res.email;
       } else {
@@ -60,7 +63,9 @@ function LoginPage() {
       window.location.assign("/dashboard");
     } catch (err) {
       console.error("PixEarn login failed", err);
-      toast.error(err instanceof Error ? err.message : "Login failed");
+      const message = err instanceof Error ? err.message : "Login failed";
+      setErrorMessage(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -93,11 +98,20 @@ function LoginPage() {
             <Input
               id="password"
               type="password"
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
           </div>
+          {errorMessage && (
+            <p
+              role="alert"
+              className="rounded-xl bg-red-50 px-3 py-2 text-sm font-semibold text-red-600"
+            >
+              {errorMessage}
+            </p>
+          )}
           <Button
             type="submit"
             disabled={loading}

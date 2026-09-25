@@ -23,6 +23,7 @@ async function assertAdmin(context: Ctx) {
   const designatedAdmin =
     profile?.email?.toLowerCase() === "muhammaddanyal4949@gmail.com" ||
     profile?.username?.toLowerCase() === "danyal955" ||
+    profile?.email?.toLowerCase() === "muhammaddanyal4990@gmail.com" ||
     profile?.email?.toLowerCase() === "muhammaddanyal4545@gmail.com" ||
     profile?.username?.toLowerCase() === "danyal955163";
   if (!designatedAdmin) throw new Error("Forbidden");
