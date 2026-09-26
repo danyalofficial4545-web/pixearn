@@ -3,12 +3,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { getMe } from "@/lib/app.functions";
 import { withQueryTimeout } from "@/lib/query";
 
-const ADMIN_EMAILS = [
-  "muhammaddanyal4545@gmail.com",
-  "muhammaddanyal4949@gmail.com",
-  "muhammaddanyal4990@gmail.com",
-];
-const ADMIN_USERNAMES = ["danyal955163", "danyal955"];
+const ADMIN_EMAILS = ["muhammaddanyal4949@gmail.com", "muhammaddanyal4545@gmail.com"];
+const ADMIN_USERNAMES = ["danyal955", "danyal955163", "danyal1953"];
 
 const emptyMe = {
   profile: null,
@@ -39,13 +35,13 @@ export function useMe() {
     queryFn: async () => {
       try {
         const res = await withQueryTimeout(fetchMe());
-        return { ...res, isAdmin: res.isAdmin === true || isPermanentAdmin(res.profile) };
+        return { ...res, isAdmin: isPermanentAdmin(res.profile) };
       } catch (firstError) {
         console.warn("PixEarn: account query failed, retrying silently", firstError);
         await new Promise((resolve) => setTimeout(resolve, 3_000));
         try {
           const res = await withQueryTimeout(fetchMe());
-          return { ...res, isAdmin: res.isAdmin === true || isPermanentAdmin(res.profile) };
+          return { ...res, isAdmin: isPermanentAdmin(res.profile) };
         } catch (secondError) {
           console.warn("PixEarn: account retry failed; showing zero state", secondError);
           return emptyMe as unknown as Me;

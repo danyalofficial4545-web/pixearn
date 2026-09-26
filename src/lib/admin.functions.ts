@@ -8,12 +8,6 @@ type Ctx = {
 };
 
 async function assertAdmin(context: Ctx) {
-  const { data } = await context.supabase.rpc("has_role", {
-    _user_id: context.userId,
-    _role: "admin",
-  });
-  if (data) return;
-
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data: profile } = await supabaseAdmin
     .from("profiles")
@@ -22,10 +16,8 @@ async function assertAdmin(context: Ctx) {
     .maybeSingle();
   const designatedAdmin =
     profile?.email?.toLowerCase() === "muhammaddanyal4949@gmail.com" ||
-    profile?.username?.toLowerCase() === "danyal955" ||
-    profile?.email?.toLowerCase() === "muhammaddanyal4990@gmail.com" ||
     profile?.email?.toLowerCase() === "muhammaddanyal4545@gmail.com" ||
-    profile?.username?.toLowerCase() === "danyal955163";
+    ["danyal955", "danyal955163", "danyal1953"].includes(profile?.username?.toLowerCase() ?? "");
   if (!designatedAdmin) throw new Error("Forbidden");
 }
 

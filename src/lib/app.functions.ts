@@ -5,9 +5,8 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 export const PERMANENT_ADMIN_EMAILS = [
   "muhammaddanyal4949@gmail.com",
   "muhammaddanyal4545@gmail.com",
-  "muhammaddanyal4990@gmail.com",
 ] as const;
-export const PERMANENT_ADMIN_USERNAMES = ["danyal955", "danyal955163"] as const;
+export const PERMANENT_ADMIN_USERNAMES = ["danyal955", "danyal955163", "danyal1953"] as const;
 
 function isPermanentAdmin(email: string, username: string) {
   return (

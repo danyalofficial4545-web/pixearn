@@ -48,6 +48,14 @@ const TABS = [
   "Settings",
 ] as const;
 
+const ADMIN_NAV = [
+  { label: "Dashboard", tab: "Overview" },
+  { label: "Users", tab: "Users" },
+  { label: "Tasks", tab: "Tasks" },
+  { label: "Withdrawals", tab: "Withdrawals" },
+  { label: "Settings", tab: "Settings" },
+] as const;
+
 function AdminPage() {
   const { data: me } = useMe();
   const navigate = useNavigate();
@@ -118,6 +126,25 @@ function AdminPage() {
   return (
     <AppShell title="Admin panel">
       <div className="space-y-4">
+        <nav
+          className="flex flex-wrap gap-2 rounded-2xl border border-violet-100 bg-gradient-to-r from-violet-50 to-indigo-50 p-2"
+          aria-label="Admin navigation"
+        >
+          {ADMIN_NAV.map((item) => (
+            <button
+              key={item.tab}
+              onClick={() => setTab(item.tab)}
+              className={cn(
+                "rounded-xl px-3 py-2 text-xs font-black transition-colors",
+                tab === item.tab
+                  ? "bg-violet-600 text-white shadow-sm"
+                  : "text-violet-800 hover:bg-white",
+              )}
+            >
+              {item.label}
+            </button>
+          ))}
+        </nav>
         <div className="flex gap-2 overflow-x-auto pb-1">
           {TABS.map((t) => (
             <button

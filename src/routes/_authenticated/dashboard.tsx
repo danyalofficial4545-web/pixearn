@@ -60,6 +60,8 @@ function DashboardPage() {
   const isFree = data?.profile?.active_package_id === "free" || !data?.profile;
   const todayTasks = (tasksQuery.data?.tasks ?? []).slice(0, pkg?.daily_tasks ?? 1);
   const displayName = profile?.username ?? "Danyal";
+  const referralCode =
+    profile?.username || profile?.referral_code || profile?.email?.split("@")[0] || "pixuser";
 
   return (
     <AppShell title="Dashboard">
@@ -156,7 +158,7 @@ function DashboardPage() {
           </div>
         </div>
 
-        <ReferralBanner code={profile?.username ?? null} />
+        <ReferralBanner code={referralCode} />
 
         <section>
           <div className="mb-3 flex items-center justify-between">

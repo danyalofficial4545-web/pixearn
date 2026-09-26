@@ -40,6 +40,7 @@ function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [emailExists, setEmailExists] = useState(false);
 
   useEffect(() => {
     if (ref) window.localStorage.setItem("pixearn_referral_code", ref.trim().toLowerCase());
@@ -53,11 +54,11 @@ function RegisterPage() {
     e.preventDefault();
     setErrorMessage("");
     setSuccessMessage("");
+    setEmailExists(false);
     const email = form.email.trim().toLowerCase();
     const username = form.username.trim().toLowerCase();
     if (!/^[a-z0-9._%+-]+@gmail\.com$/i.test(email)) {
       setErrorMessage("Aap ka Gmail galat hai");
-      toast.error("Aap ka Gmail galat hai");
       return;
     }
     if (
@@ -66,17 +67,14 @@ function RegisterPage() {
       !/[0-9]/.test(form.password)
     ) {
       setErrorMessage("Password me ABC aur 123 dono hone chahiye");
-      toast.error("Password me ABC aur 123 dono hone chahiye");
       return;
     }
     if (!/(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9_]{3,30}$/.test(username)) {
       setErrorMessage("Username me ABC aur 123 dono zaroori hai - jaise danyal955");
-      toast.error("Username me ABC aur 123 dono zaroori hai - jaise danyal955");
       return;
     }
     if (form.password !== form.confirm) {
       setErrorMessage("Passwords do not match");
-      toast.error("Passwords do not match");
       return;
     }
     setLoading(true);
@@ -84,7 +82,10 @@ function RegisterPage() {
       const registered = await checkEmailRegistered({ data: { email } });
       if (registered.unavailable)
         throw new Error("Server se rabta nahi ho saka, thori dair baad try karein");
-      if (registered.registered) throw new Error("Ye Gmail pehle se registered hai, Login karein");
+      if (registered.registered) {
+        setEmailExists(true);
+        throw new Error("Ye Gmail pehle se registered hai, Login karein");
+      }
       const usernameResult = await checkUsernameTaken({ data: { username } });
       if (usernameResult.unavailable)
         throw new Error("Server se rabta nahi ho saka, thori dair baad try karein");
@@ -123,13 +124,16 @@ function RegisterPage() {
     } catch (err) {
       console.error("PixEarn registration failed", err);
       const message = err instanceof Error ? err.message : "";
-      const friendlyMessage = message.toLowerCase().includes("missing supabase")
+      const lowerMessage = message.toLowerCase();
+      if (lowerMessage.includes("gmail pehle se registered")) setEmailExists(true);
+      const friendlyMessage = lowerMessage.includes("missing supabase")
         ? "Server se rabta nahi ho saka, thori dair baad try karein"
-        : message.toLowerCase().includes("already") || message.toLowerCase().includes("registered")
-          ? "Ye Gmail pehle se registered hai, Login karein"
-          : message || "Server error, please try again";
+        : lowerMessage.includes("username already taken")
+          ? "Username already taken, try danyal955_1234"
+          : lowerMessage.includes("already") || lowerMessage.includes("registered")
+            ? "Ye Gmail pehle se registered hai, Login karein"
+            : message || "Server error, please try again";
       setErrorMessage(friendlyMessage);
-      toast.error(friendlyMessage);
     } finally {
       setLoading(false);
     }
@@ -240,20 +244,26 @@ function RegisterPage() {
                   {successMessage}
                 </p>
               )}
-              <Button
-                type="submit"
-                disabled={loading}
-                className="h-11 w-full rounded-xl disabled:opacity-70"
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="mr-2 size-4 animate-spin" />
-                    Creating account…
-                  </>
-                ) : (
-                  "Register"
-                )}
-              </Button>
+              {emailExists ? (
+                <Button asChild className="h-11 w-full rounded-xl">
+                  <Link to="/login">Login pe jao</Link>
+                </Button>
+              ) : (
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="h-11 w-full rounded-xl disabled:opacity-70"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="mr-2 size-4 animate-spin" />
+                      Creating account…
+                    </>
+                  ) : (
+                    "Register"
+                  )}
+                </Button>
+              )}
               <p className="text-center text-xs text-muted-foreground">
                 Already have an account?{" "}
                 <Link to="/login" className="text-primary hover:underline">

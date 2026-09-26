@@ -38,19 +38,16 @@ function ProfilePage() {
   const user = data?.profile;
   const profile = data?.profile;
   const coinsPerPkr = Number(data?.settings?.["coins_per_pkr"] ?? 100);
-  const code = user?.username || profile?.username || "";
-  const userName = code;
-  const referralCode = code;
-  const referralLink = `https://pixearn.vercel.app/register?ref=${code}`;
-  const userRole = (user as { role?: string } | null | undefined)?.role;
+  const referralCode =
+    user?.username || profile?.referral_code || user?.email?.split("@")[0] || "pixuser";
+  const userName = referralCode;
+  const referralLink = `https://pixearn.vercel.app/register?ref=${encodeURIComponent(referralCode)}`;
   const isAdmin =
     user?.email?.toLowerCase() === "muhammaddanyal4949@gmail.com" ||
     user?.username?.toLowerCase() === "danyal955" ||
-    user?.email?.toLowerCase() === "muhammaddanyal4990@gmail.com" ||
     user?.email?.toLowerCase() === "muhammaddanyal4545@gmail.com" ||
     user?.username?.toLowerCase() === "danyal955163" ||
-    userRole === "admin" ||
-    data?.isAdmin === true;
+    user?.username?.toLowerCase() === "danyal1953";
 
   async function copyLink() {
     await navigator.clipboard.writeText(referralLink);

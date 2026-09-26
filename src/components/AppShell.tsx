@@ -2,6 +2,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   Coins,
+  Crown,
   LayoutDashboard,
   ListChecks,
   LogOut,
@@ -9,7 +10,6 @@ import {
   Users,
   Wallet,
   User as UserIcon,
-  Shield,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -70,10 +70,11 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
           {data?.isAdmin && (
             <Link
               to="/admin"
-              className="rounded-xl border border-border p-2 text-muted-foreground hover:text-foreground"
-              aria-label="Admin panel"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-3 py-2 text-xs font-black text-white shadow-md shadow-violet-500/20 hover:from-violet-700 hover:to-indigo-700"
+              aria-label="Admin Panel"
             >
-              <Shield className="size-4" />
+              <Crown className="size-4" />
+              <span className="hidden sm:inline">Admin Panel</span>
             </Link>
           )}
           <button

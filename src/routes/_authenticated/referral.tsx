@@ -40,8 +40,12 @@ function ReferralPage() {
     },
   });
   const coinsPerPkr = Number(me?.settings?.["coins_per_pkr"] ?? 100);
-  const userName = me?.profile?.username || "";
-  const link = `https://pixearn.vercel.app/register?ref=${userName}`;
+  const userName =
+    me?.profile?.username ||
+    me?.profile?.referral_code ||
+    me?.profile?.email?.split("@")[0] ||
+    "pixuser";
+  const link = `https://pixearn.vercel.app/register?ref=${encodeURIComponent(userName)}`;
 
   async function copyLink() {
     await navigator.clipboard.writeText(link);
